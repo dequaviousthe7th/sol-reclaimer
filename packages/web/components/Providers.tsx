@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo, useState, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 
@@ -11,14 +11,22 @@ interface ProvidersProps {
 }
 
 export const Providers: FC<ProvidersProps> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const endpoint = useMemo(() =>
     process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com',
     []
   );
 
-  // Empty array - wallet-standard compatible wallets (Phantom, Solflare, Backpack, etc.)
-  // are auto-detected without needing explicit adapters
   const wallets = useMemo(() => [], []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ConnectionProvider endpoint={endpoint}>

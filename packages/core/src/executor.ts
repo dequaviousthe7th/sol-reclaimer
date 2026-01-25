@@ -79,6 +79,8 @@ export class TransactionExecutor {
       simulate = false,
     } = options;
 
+    console.log('Executor: Building transactions for', accounts.length, 'accounts');
+
     const transactions = await this.builder.buildLegacyCloseTransactions(
       accounts,
       walletPublicKey,
@@ -87,8 +89,12 @@ export class TransactionExecutor {
       batchSize
     );
 
+    console.log('Executor: Built', transactions.length, 'transactions');
+
     // Sign all transactions at once with wallet
+    console.log('Executor: Requesting wallet signature...');
     const signedTransactions = await signAllTransactions(transactions);
+    console.log('Executor: Got', signedTransactions.length, 'signed transactions');
 
     return this.executeSigned(
       signedTransactions,

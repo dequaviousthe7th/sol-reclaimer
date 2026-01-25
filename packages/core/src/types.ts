@@ -8,6 +8,7 @@ export interface TokenAccountInfo {
   decimals: number;
   rentLamports: number;
   isCloseable: boolean;
+  programId: PublicKey;
   symbol?: string;
   name?: string;
 }

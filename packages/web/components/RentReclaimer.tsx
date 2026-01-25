@@ -69,7 +69,10 @@ export const RentReclaimer: FC = () => {
   }, [publicKey, connection]);
 
   const handleClose = useCallback(async () => {
-    if (!publicKey || !signAllTransactions || !scanResult) return;
+    if (!publicKey || !signAllTransactions || !scanResult) {
+      console.log('Missing requirements:', { publicKey: !!publicKey, signAllTransactions: !!signAllTransactions, scanResult: !!scanResult });
+      return;
+    }
 
     setStatus('closing');
     setError(null);
@@ -79,6 +82,9 @@ export const RentReclaimer: FC = () => {
       const accountsToClose = scanResult.closeableAccounts.filter(
         acc => selectedAccounts.has(acc.pubkey.toBase58())
       );
+
+      console.log('Accounts to close:', accountsToClose.length);
+      console.log('Selected accounts:', selectedAccounts.size);
 
       if (accountsToClose.length === 0) {
         setError('No accounts selected');
@@ -90,6 +96,7 @@ export const RentReclaimer: FC = () => {
         connection: connection,
       });
 
+      console.log('Calling closeWithWallet...');
       const result = await reclaimer.closeWithWallet(
         publicKey,
         signAllTransactions,
@@ -97,11 +104,13 @@ export const RentReclaimer: FC = () => {
         {
           batchSize: 20,
           onProgress: (current, total) => {
+            console.log('Progress:', current, '/', total);
             setProgress({ current, total });
           },
         }
       );
 
+      console.log('Close result:', result);
       setCloseResult(result);
       setStatus('complete');
     } catch (err) {

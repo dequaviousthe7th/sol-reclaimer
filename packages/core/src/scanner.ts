@@ -78,6 +78,7 @@ export class AccountScanner {
           decimals: tokenAmount.decimals,
           rentLamports: item.account.lamports,
           isCloseable,
+          programId: programId,
         };
       });
     } catch (error) {

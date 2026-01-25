@@ -40,8 +40,7 @@ export class TransactionBuilder {
   }
 
   private getProgramIdForAccount(account: TokenAccountInfo): PublicKey {
-    // Default to TOKEN_PROGRAM_ID, could be extended to detect Token-2022
-    return TOKEN_PROGRAM_ID;
+    return account.programId;
   }
 
   async buildCloseTransactions(
