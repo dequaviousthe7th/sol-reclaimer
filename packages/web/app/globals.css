@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --solana-purple: #9945FF;
+  --solana-green: #14F195;
+}
+
+body {
+  @apply bg-gray-950 text-white min-h-screen;
+}
+
+.wallet-adapter-button {
+  @apply bg-solana-purple hover:bg-solana-purple/80 transition-colors !important;
+}
+
+.wallet-adapter-modal-wrapper {
+  @apply bg-gray-900 !important;
+}
+
+.gradient-border {
+  position: relative;
+  background: linear-gradient(to right, #9945FF, #14F195);
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.gradient-border > div {
+  background: #0E0E10;
+  border-radius: 10px;
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(20, 241, 149, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px rgba(153, 69, 255, 0.3);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
