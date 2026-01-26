@@ -8,7 +8,7 @@ import {
   TokenAccountInfo,
   formatSol,
   CloseAccountsResult
-} from '@sol-reclaim/core';
+} from '@solreclaimer/core';
 import { AccountList } from './AccountList';
 import { TransactionProgress } from './TransactionProgress';
 

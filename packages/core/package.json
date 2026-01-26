@@ -1,7 +1,8 @@
 {
-  "name": "@sol-reclaim/core",
+  "name": "@solreclaimer/core",
   "version": "1.0.0",
-  "description": "Core library for Solana rent reclaimer",
+  "description": "SolReclaimer - Core library for Solana rent reclaiming",
+  "author": "Dequavious",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

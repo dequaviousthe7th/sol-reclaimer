@@ -1,8 +1,9 @@
 {
-  "name": "sol-rent-reclaimer",
+  "name": "solreclaimer",
   "version": "1.0.0",
   "private": true,
-  "description": "Zero-fee Solana rent reclaimer - close empty token accounts and reclaim SOL",
+  "description": "SolReclaimer - Zero-fee Solana rent reclaimer - close empty token accounts and reclaim SOL",
+  "author": "Dequavious",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",

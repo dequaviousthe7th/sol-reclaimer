@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@sol-reclaim/core'],
+  transpilePackages: ['@solreclaimer/core'],
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

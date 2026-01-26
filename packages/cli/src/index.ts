@@ -7,8 +7,8 @@ import { closeCommand } from './commands/close';
 const program = new Command();
 
 program
-  .name('sol-reclaim')
-  .description('Zero-fee Solana rent reclaimer - close empty token accounts and reclaim SOL')
+  .name('solreclaimer')
+  .description('SolReclaimer - Zero-fee Solana rent reclaimer - close empty token accounts and reclaim SOL')
   .version('1.0.0');
 
 program.addCommand(scanCommand);

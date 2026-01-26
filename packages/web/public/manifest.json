@@ -1,6 +1,6 @@
 {
-  "name": "Sol Rent Reclaimer",
-  "short_name": "SolReclaim",
+  "name": "SolReclaimer",
+  "short_name": "SolReclaimer",
   "description": "Close empty Solana token accounts and reclaim your SOL. Zero fees.",
   "start_url": "/",
   "display": "standalone",

@@ -1,7 +1,7 @@
 'use client';
 
 import { FC } from 'react';
-import { TokenAccountInfo, formatSol } from '@sol-reclaim/core';
+import { TokenAccountInfo, formatSol } from '@solreclaimer/core';
 
 interface AccountListProps {
   accounts: TokenAccountInfo[];

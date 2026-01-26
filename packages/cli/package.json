@@ -1,9 +1,10 @@
 {
-  "name": "@sol-reclaim/cli",
+  "name": "@solreclaimer/cli",
   "version": "1.0.0",
-  "description": "CLI tool for Solana rent reclaimer",
+  "description": "SolReclaimer - CLI tool for Solana rent reclaiming",
+  "author": "Dequavious",
   "bin": {
-    "sol-reclaim": "./dist/index.js"
+    "solreclaimer": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "scripts": {
@@ -13,7 +14,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@sol-reclaim/core": "workspace:*",
+    "@solreclaimer/core": "workspace:*",
     "@solana/web3.js": "^1.91.0",
     "bs58": "^5.0.0",
     "chalk": "^4.1.2",

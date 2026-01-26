@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { Keypair } from '@solana/web3.js';
-import { RentReclaimer, formatSol } from '@sol-reclaim/core';
+import { RentReclaimer, formatSol } from '@solreclaimer/core';
 import * as fs from 'fs';
 import * as readline from 'readline';
 import chalk from 'chalk';
@@ -46,7 +46,7 @@ export const closeCommand = new Command('close')
       const keypair = Keypair.fromSecretKey(Uint8Array.from(keypairData));
       const walletAddress = keypair.publicKey.toBase58();
 
-      console.log('\n' + chalk.bold('Sol Rent Reclaimer'));
+      console.log('\n' + chalk.bold('SolReclaimer'));
       console.log(chalk.gray('─'.repeat(50)));
       console.log(`${chalk.cyan('Wallet:')} ${walletAddress}`);
       console.log(`${chalk.cyan('RPC:')} ${options.rpc}`);

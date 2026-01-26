@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { Keypair, PublicKey } from '@solana/web3.js';
-import { RentReclaimer, formatSol } from '@sol-reclaim/core';
+import { RentReclaimer, formatSol } from '@solreclaimer/core';
 import * as fs from 'fs';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -83,7 +83,7 @@ export const scanCommand = new Command('scan')
         }
       }
 
-      console.log('\n' + chalk.yellow('Run ') + chalk.bold('sol-reclaim close <wallet>') + chalk.yellow(' to reclaim SOL'));
+      console.log('\n' + chalk.yellow('Run ') + chalk.bold('solreclaimer close <wallet>') + chalk.yellow(' to reclaim SOL'));
 
     } catch (error) {
       spinner.fail('Scan failed');
