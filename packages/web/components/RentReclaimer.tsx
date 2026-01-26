@@ -36,7 +36,6 @@ export const RentReclaimer: FC = () => {
       console.log('Connection endpoint:', connection.rpcEndpoint);
       console.log('Scanning wallet:', publicKey.toBase58());
 
-      // Test connection first
       try {
         const balance = await connection.getBalance(publicKey);
         console.log('Wallet SOL balance:', balance / 1e9);
@@ -55,7 +54,6 @@ export const RentReclaimer: FC = () => {
       , 2));
       setScanResult(result);
 
-      // Select all closeable accounts by default
       const allSelected = new Set(
         result.closeableAccounts.map(acc => acc.pubkey.toBase58())
       );
@@ -157,22 +155,30 @@ export const RentReclaimer: FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Status Card */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">
-            {status === 'idle' && 'Ready to Scan'}
-            {status === 'scanning' && 'Scanning...'}
-            {status === 'ready' && 'Scan Complete'}
-            {status === 'closing' && 'Closing Accounts...'}
-            {status === 'complete' && 'Complete!'}
-            {status === 'error' && 'Error'}
-          </h2>
+      {/* Main Card */}
+      <div className="card p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-white">
+              {status === 'idle' && 'Ready to Scan'}
+              {status === 'scanning' && 'Scanning Wallet...'}
+              {status === 'ready' && 'Scan Complete'}
+              {status === 'closing' && 'Closing Accounts...'}
+              {status === 'complete' && 'Success!'}
+              {status === 'error' && 'Error'}
+            </h2>
+            {status === 'idle' && (
+              <p className="text-sm text-gray-400 mt-1">Find and close empty token accounts</p>
+            )}
+          </div>
           {(status === 'ready' || status === 'complete' || status === 'error') && (
             <button
               onClick={handleReset}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
             >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Start Over
             </button>
           )}
@@ -180,14 +186,16 @@ export const RentReclaimer: FC = () => {
 
         {/* Idle State */}
         {status === 'idle' && (
-          <div className="text-center py-8">
-            <p className="text-gray-400 mb-6">
-              Scan your wallet to find empty token accounts that can be closed.
+          <div className="text-center py-12">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+              Scan your wallet to discover empty token accounts that can be closed to reclaim SOL.
             </p>
-            <button
-              onClick={handleScan}
-              className="bg-gradient-to-r from-solana-purple to-solana-green px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
-            >
+            <button onClick={handleScan} className="btn-primary px-10 py-4 text-lg">
               Scan Wallet
             </button>
           </div>
@@ -195,35 +203,36 @@ export const RentReclaimer: FC = () => {
 
         {/* Scanning State */}
         {status === 'scanning' && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 border-4 border-solana-purple border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-6 relative">
+              <div className="absolute inset-0 rounded-full border-4 border-solana-purple/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-solana-purple animate-spin"></div>
+            </div>
             <p className="text-gray-400">Scanning token accounts...</p>
           </div>
         )}
 
-        {/* Ready State - Show Results */}
+        {/* Ready State */}
         {status === 'ready' && scanResult && (
           <div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <StatCard
-                label="Total Accounts"
-                value={scanResult.totalAccounts.toString()}
-              />
-              <StatCard
-                label="Empty Accounts"
-                value={scanResult.closeableAccounts.length.toString()}
-                highlight
-              />
-              <StatCard
-                label="Selected"
-                value={selectedAccounts.size.toString()}
-              />
-              <StatCard
-                label="SOL to Reclaim"
-                value={`${formatSol(selectedReclaimable)}`}
-                highlight
-                suffix="SOL"
-              />
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              <div className="stat-card">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Total</p>
+                <p className="text-2xl font-bold text-white">{scanResult.totalAccounts}</p>
+              </div>
+              <div className="stat-card highlight">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Empty</p>
+                <p className="text-2xl font-bold text-solana-green">{scanResult.closeableAccounts.length}</p>
+              </div>
+              <div className="stat-card">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Selected</p>
+                <p className="text-2xl font-bold text-white">{selectedAccounts.size}</p>
+              </div>
+              <div className="stat-card highlight">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Reclaimable</p>
+                <p className="text-2xl font-bold text-solana-green">{formatSol(selectedReclaimable)}</p>
+              </div>
             </div>
 
             {scanResult.closeableAccounts.length > 0 ? (
@@ -239,15 +248,20 @@ export const RentReclaimer: FC = () => {
                 <button
                   onClick={handleClose}
                   disabled={selectedAccounts.size === 0}
-                  className="w-full mt-6 bg-gradient-to-r from-solana-purple to-solana-green px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full mt-6 btn-primary py-4 text-lg"
                 >
                   Close {selectedAccounts.size} Account{selectedAccounts.size !== 1 ? 's' : ''} & Reclaim {formatSol(selectedReclaimable)} SOL
                 </button>
               </>
             ) : (
-              <div className="text-center py-8 text-gray-400">
-                <p className="text-2xl mb-2">No empty accounts found.</p>
-                <p>Your wallet is clean! Nothing to reclaim.</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 rounded-full bg-solana-green/10 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-xl font-semibold text-white mb-2">All Clean!</p>
+                <p className="text-gray-400">No empty token accounts found. Nothing to reclaim.</p>
               </div>
             )}
           </div>
@@ -260,31 +274,34 @@ export const RentReclaimer: FC = () => {
 
         {/* Complete State */}
         {status === 'complete' && closeResult && (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-solana-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-12">
+            <div className="w-20 h-20 rounded-full bg-solana-green/20 flex items-center justify-center mx-auto mb-6 glow-green">
+              <svg className="w-10 h-10 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-solana-green mb-2">
-              {formatSol(closeResult.reclaimedLamports)} SOL Reclaimed!
+            <h3 className="text-3xl font-bold text-solana-green mb-2">
+              +{formatSol(closeResult.reclaimedLamports)} SOL
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-8">
               Successfully closed {closeResult.closedCount} account{closeResult.closedCount !== 1 ? 's' : ''}
             </p>
 
             {closeResult.signatures.length > 0 && (
-              <div className="bg-gray-800/50 rounded-xl p-4 text-left max-h-40 overflow-y-auto">
-                <p className="text-sm text-gray-400 mb-2">Transaction Signatures:</p>
+              <div className="bg-[#0d0d0f] border border-[#222228] rounded-xl p-4 text-left max-h-48 overflow-y-auto">
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Transactions</p>
                 {closeResult.signatures.map((sig, i) => (
                   <a
                     key={i}
                     href={`https://solscan.io/tx/${sig}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block text-sm text-solana-purple hover:text-solana-green truncate"
+                    className="flex items-center gap-2 text-sm text-solana-purple hover:text-solana-green transition-colors py-2 border-b border-[#1a1a1f] last:border-0"
                   >
-                    {sig}
+                    <span className="truncate font-mono">{sig}</span>
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
                   </a>
                 ))}
               </div>
@@ -292,35 +309,16 @@ export const RentReclaimer: FC = () => {
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error Display */}
         {error && (
-          <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400">
-            {error}
+          <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
+            <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-red-400 text-sm">{error}</p>
           </div>
         )}
       </div>
     </div>
   );
 };
-
-function StatCard({
-  label,
-  value,
-  suffix,
-  highlight = false
-}: {
-  label: string;
-  value: string;
-  suffix?: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className={`bg-gray-800/50 rounded-xl p-4 ${highlight ? 'border border-solana-green/30' : ''}`}>
-      <p className="text-sm text-gray-400">{label}</p>
-      <p className={`text-2xl font-bold ${highlight ? 'text-solana-green' : 'text-white'}`}>
-        {value}
-        {suffix && <span className="text-sm font-normal text-gray-400 ml-1">{suffix}</span>}
-      </p>
-    </div>
-  );
-}

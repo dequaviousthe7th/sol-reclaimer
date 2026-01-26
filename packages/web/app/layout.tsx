@@ -1,14 +1,25 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/Providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Sol Rent Reclaimer - Free Solana Account Closer',
   description: 'Close empty Solana token accounts and reclaim your SOL. Zero fees, open source.',
   keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free'],
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/icon-192.png',
+  },
+  manifest: '/manifest.json',
+  themeColor: '#9945FF',
+  openGraph: {
+    title: 'Sol Rent Reclaimer',
+    description: 'Close empty Solana token accounts and reclaim your SOL. Zero fees.',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -18,7 +29,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      </head>
+      <body className={spaceGrotesk.className}>
         <Providers>
           {children}
         </Providers>
