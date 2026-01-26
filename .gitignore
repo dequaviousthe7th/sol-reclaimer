@@ -2,7 +2,6 @@
 node_modules/
 **/node_modules/
 .pnpm-store/
-pnpm-lock.yaml
 
 # Build outputs
 dist/
@@ -10,11 +9,14 @@ dist/
 .next/
 **/.next/
 out/
+**/out/
 build/
 
-# Environment
+# Environment (NEVER commit these - contain API keys)
 .env
 .env.local
+.env.production.local
+.env.development.local
 .env.*.local
 **/.env
 **/.env.local
@@ -25,15 +27,21 @@ build/
 .vscode/
 *.swp
 *.swo
+*.sublime-*
 
 # OS
 .DS_Store
+.DS_Store?
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Logs
 *.log
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Turbo
 .turbo/
@@ -41,13 +49,25 @@ pnpm-debug.log*
 
 # Testing
 coverage/
+.nyc_output/
 
 # Misc
 *.tgz
 .cache/
+*.pem
+*.key
 
 # Planning docs
 PPlan/
 
-# Local dev
-packages/web/.env.local
+# Vercel / Cloudflare
+.vercel/
+.wrangler/
+.cloudflare/
+
+# Debug
+.npm
+.eslintcache
+
+# TypeScript cache
+*.tsbuildinfo
