@@ -14,7 +14,11 @@ import { TransactionProgress } from './TransactionProgress';
 
 type Status = 'idle' | 'scanning' | 'ready' | 'closing' | 'complete' | 'error';
 
-export const RentReclaimer: FC = () => {
+interface RentReclaimerProps {
+  onBack?: () => void;
+}
+
+export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
   const { connection } = useConnection();
   const { publicKey, signAllTransactions } = useWallet();
 
@@ -126,6 +130,12 @@ export const RentReclaimer: FC = () => {
     setError(null);
   }, []);
 
+  const handleBack = useCallback(() => {
+    if (onBack) {
+      onBack();
+    }
+  }, [onBack]);
+
   const toggleAccount = useCallback((pubkey: string) => {
     setSelectedAccounts(prev => {
       const next = new Set(prev);
@@ -186,18 +196,31 @@ export const RentReclaimer: FC = () => {
 
         {/* Idle State */}
         {status === 'idle' && (
-          <div className="text-center py-12">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div>
+            {/* Back Button */}
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors mb-6"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-            </div>
-            <p className="text-gray-400 mb-8 max-w-sm mx-auto">
-              Scan your wallet to discover empty token accounts that can be closed to reclaim SOL.
-            </p>
-            <button onClick={handleScan} className="btn-primary px-10 py-4 text-lg">
-              Scan Wallet
+              Back
             </button>
+
+            <div className="text-center py-12">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-6">
+                <svg className="w-10 h-10 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <p className="text-gray-400 mb-8 max-w-sm mx-auto">
+                Scan your wallet to discover empty token accounts that can be closed to reclaim SOL.
+              </p>
+              <button onClick={handleScan} className="btn-primary px-10 py-4 text-lg">
+                Scan Wallet
+              </button>
+            </div>
           </div>
         )}
 

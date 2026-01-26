@@ -24,13 +24,15 @@ export const Providers: FC<ProvidersProps> = ({ children }) => {
 
   const wallets = useMemo(() => [], []);
 
+  // Render children immediately for fast initial paint
+  // Wallet functionality will hydrate when ready
   if (!mounted) {
-    return null;
+    return <>{children}</>;
   }
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
+      <WalletProvider wallets={wallets} autoConnect={true}>
         <WalletModalProvider>
           {children}
         </WalletModalProvider>
