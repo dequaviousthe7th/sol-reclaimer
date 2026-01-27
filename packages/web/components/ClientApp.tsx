@@ -24,23 +24,23 @@ const RentReclaimer = dynamic(
 
 // Hero section component
 const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetStarted?: () => void }) => (
-  <section className="text-center py-12">
-    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111113] border border-[#222228] text-solana-purple text-sm font-medium mb-6">
+  <section className="text-center py-8 flex-1 flex flex-col justify-center">
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111113] border border-[#222228] text-solana-purple text-sm font-medium mb-5 self-center">
       <span className="w-2 h-2 rounded-full bg-solana-green animate-pulse"></span>
       100% Free - No Hidden Fees
     </div>
 
-    <h2 className="text-5xl md:text-6xl font-bold mb-6">
+    <h2 className="text-5xl md:text-6xl font-bold mb-5">
       <span className="text-white">Reclaim Your</span>
       <br />
       <span className="gradient-text">Locked SOL</span>
     </h2>
 
-    <p className="text-lg text-gray-400 mb-8 max-w-xl mx-auto leading-relaxed">
+    <p className="text-lg text-gray-400 mb-6 max-w-xl mx-auto leading-relaxed">
       Empty token accounts are holding your SOL hostage. Close them instantly and get your rent deposits back.
     </p>
 
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
       <div className="gradient-border">
         <div className="px-6 py-3">
           {connected ? (
@@ -55,7 +55,7 @@ const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetSta
     </div>
 
     {/* Stats */}
-    <div className="grid grid-cols-3 gap-6 max-w-md mx-auto mb-12">
+    <div className="grid grid-cols-3 gap-6 max-w-md mx-auto mb-8">
       <div className="text-center">
         <div className="text-3xl font-bold text-solana-green mb-1">0%</div>
         <div className="text-sm text-gray-500">Fees</div>
@@ -71,7 +71,7 @@ const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetSta
     </div>
 
     {/* How it works */}
-    <div className="grid md:grid-cols-3 gap-4 mb-12">
+    <div className="grid md:grid-cols-3 gap-4 mb-6">
       <FeatureCard
         icon={
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,11 +136,11 @@ const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetSta
 
 function FeatureCard({ icon, step, title, description }: { icon: React.ReactNode; step: string; title: string; description: string }) {
   return (
-    <div className="card card-hover p-6 text-center">
-      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-4 text-solana-purple">
+    <div className="card card-hover p-5 text-center">
+      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-3 text-solana-purple">
         {icon}
       </div>
-      <div className="text-xs text-solana-purple font-medium mb-2">Step {step}</div>
+      <div className="text-xs text-solana-purple font-medium mb-1">Step {step}</div>
       <h3 className="font-semibold text-lg mb-1 text-white">{title}</h3>
       <p className="text-gray-400 text-sm">{description}</p>
     </div>

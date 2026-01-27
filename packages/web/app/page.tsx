@@ -3,10 +3,10 @@ import { ClientApp } from '@/components/ClientApp';
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <div className="container mx-auto px-4 py-5 max-w-4xl">
+    <main className="min-h-screen flex flex-col">
+      <div className="container mx-auto px-4 py-4 max-w-4xl flex flex-col flex-1">
         {/* Header */}
-        <header className="flex justify-between items-center mb-8">
+        <header className="flex justify-between items-center mb-2">
           <a href="/" className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@ export default function Home() {
         <ClientApp />
 
         {/* Footer */}
-        <footer className="mt-6 pt-4 border-t border-[#222228] text-center">
+        <footer className="mt-auto pt-3 border-t border-[#222228] text-center">
           <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
             <a
               href="https://github.com/dequaviousthe7th"

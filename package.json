@@ -10,7 +10,8 @@
     "dev:web": "pnpm --filter web dev",
     "dev:cli": "pnpm --filter cli dev",
     "lint": "turbo lint",
-    "clean": "turbo clean && rm -rf node_modules"
+    "clean": "turbo clean && rm -rf node_modules",
+    "deploy": "pnpm build && npx wrangler pages deploy packages/web/out --project-name=solreclaimer"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
