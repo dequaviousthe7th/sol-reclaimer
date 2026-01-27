@@ -174,7 +174,11 @@ const ClientAppInner = () => {
     return <HeroSection connected={true} onGetStarted={() => setShowReclaimer(true)} />;
   }
 
-  return <RentReclaimer onBack={() => setShowReclaimer(false)} />;
+  return (
+    <div className="pt-6">
+      <RentReclaimer onBack={() => setShowReclaimer(false)} />
+    </div>
+  );
 };
 
 export const ClientApp = () => {
