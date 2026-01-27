@@ -2,6 +2,7 @@
 const nextConfig = {
   output: 'export',
   reactStrictMode: true,
+  productionBrowserSourceMaps: false,
   transpilePackages: ['@solreclaimer/core'],
   images: {
     unoptimized: true,
