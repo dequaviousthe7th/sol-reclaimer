@@ -17,10 +17,11 @@ export const Providers: FC<ProvidersProps> = ({ children }) => {
     setMounted(true);
   }, []);
 
-  const endpoint = useMemo(() =>
-    process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com',
-    []
-  );
+  const endpoint = useMemo(() => {
+    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
+    if (workerUrl) return `${workerUrl}/api/rpc`;
+    return process.env.NEXT_PUBLIC_RPC_URL || 'https://api.mainnet-beta.solana.com';
+  }, []);
 
   const wallets = useMemo(() => [], []);
 

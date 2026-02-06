@@ -115,6 +115,20 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
       console.log('Close result:', result);
       setCloseResult(result);
       setStatus('complete');
+
+      // Fire-and-forget stats POST
+      const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
+      if (workerUrl) {
+        fetch(`${workerUrl}/api/stats`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            solReclaimed: result.reclaimedLamports / 1e9,
+            accountsClosed: result.closedCount,
+            wallet: publicKey.toBase58(),
+          }),
+        }).catch(() => {});
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to close accounts');
       setStatus('error');
@@ -220,6 +234,21 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
               <button onClick={handleScan} className="btn-primary px-10 py-4 text-lg">
                 Scan Wallet
               </button>
+              {/* DEV ONLY - REMOVE AFTER TESTING */}
+              <button
+                onClick={() => {
+                  setCloseResult({
+                    closedCount: 7,
+                    reclaimedLamports: 14280000,
+                    signatures: ['4xF9kR2pQ7mN8vB3wL5jH6dC9aE1fG2hK7nM4qR8sT3uV6wX9yZ1aB2cD3eF4gH5iJ6kL7mN8oP9q'],
+                  } as any);
+                  setStatus('complete');
+                }}
+                className="mt-4 text-xs text-gray-600 hover:text-gray-400 transition-colors underline"
+              >
+                [Dev] Preview Complete State
+              </button>
+              {/* END DEV ONLY */}
             </div>
           </div>
         )}
@@ -329,6 +358,19 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
                 ))}
               </div>
             )}
+
+            {/* Share on X */}
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just reclaimed ${formatSol(closeResult.reclaimedLamports)} SOL from ${closeResult.closedCount} empty token account${closeResult.closedCount !== 1 ? 's' : ''} with @SolanaReclaimer! #SolReclaimer\n\nReclaim yours for free: solreclaimer.net`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-xl border border-[#222228] bg-[#111113] text-sm text-gray-300 hover:text-white hover:border-gray-500 transition-all"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              Share on X
+            </a>
           </div>
         )}
 

@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useProvidersLoaded } from './LazyProviders';
 import { WalletButton } from './WalletButton';
+import { InfoModal } from './InfoModal';
 
 // Lazy load the RentReclaimer component
 const RentReclaimer = dynamic(
@@ -23,7 +24,7 @@ const RentReclaimer = dynamic(
 );
 
 // Hero section component
-const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetStarted?: () => void }) => (
+const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boolean; onGetStarted?: () => void; onOpenInfo?: () => void }) => (
   <section className="text-center py-8 flex-1 flex flex-col justify-center">
     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111113] border border-[#222228] text-solana-purple text-sm font-medium mb-5 self-center">
       <span className="w-2 h-2 rounded-full bg-solana-green animate-pulse"></span>
@@ -36,9 +37,18 @@ const HeroSection = ({ connected, onGetStarted }: { connected: boolean; onGetSta
       <span className="gradient-text">Locked SOL</span>
     </h2>
 
-    <p className="text-lg text-gray-400 mb-6 max-w-xl mx-auto leading-relaxed">
+    <p className="text-lg text-gray-400 mb-4 max-w-xl mx-auto leading-relaxed">
       Empty token accounts are holding your SOL hostage. Close them instantly and get your rent deposits back.
     </p>
+
+    {onOpenInfo && (
+      <button
+        onClick={onOpenInfo}
+        className="text-sm text-gray-500 hover:text-solana-purple transition-colors mb-6 underline underline-offset-2"
+      >
+        How does this work?
+      </button>
+    )}
 
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
       <div className="gradient-border">
@@ -160,6 +170,7 @@ function TrustBadge({ icon, text }: { icon: React.ReactNode; text: string }) {
 const ClientAppInner = () => {
   const { connected } = useWallet();
   const [showReclaimer, setShowReclaimer] = useState(false);
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   // When wallet disconnects, reset to hero
   if (!connected && showReclaimer) {
@@ -167,11 +178,21 @@ const ClientAppInner = () => {
   }
 
   if (!connected) {
-    return <HeroSection connected={false} />;
+    return (
+      <>
+        <HeroSection connected={false} onOpenInfo={() => setInfoModalOpen(true)} />
+        <InfoModal open={infoModalOpen} onClose={() => setInfoModalOpen(false)} />
+      </>
+    );
   }
 
   if (!showReclaimer) {
-    return <HeroSection connected={true} onGetStarted={() => setShowReclaimer(true)} />;
+    return (
+      <>
+        <HeroSection connected={true} onGetStarted={() => setShowReclaimer(true)} onOpenInfo={() => setInfoModalOpen(true)} />
+        <InfoModal open={infoModalOpen} onClose={() => setInfoModalOpen(false)} />
+      </>
+    );
   }
 
   return (

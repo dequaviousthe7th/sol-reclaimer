@@ -11,6 +11,8 @@
     "dev:cli": "pnpm --filter cli dev",
     "lint": "turbo lint",
     "clean": "turbo clean && rm -rf node_modules",
+    "dev:worker": "pnpm --filter @solreclaimer/worker dev",
+    "deploy:worker": "pnpm --filter @solreclaimer/worker deploy",
     "deploy": "pnpm build && npx wrangler pages deploy packages/web/out --project-name=solreclaimer"
   },
   "devDependencies": {

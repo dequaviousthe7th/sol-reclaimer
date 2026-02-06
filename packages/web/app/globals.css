@@ -247,3 +247,19 @@ body {
 .stat-card.highlight {
   @apply border-solana-green/30 bg-solana-green/5;
 }
+
+/* Modal animation */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-enter {
+  animation: modal-in 0.2s ease-out;
+}

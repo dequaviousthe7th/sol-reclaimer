@@ -1,10 +1,12 @@
 import { WalletButton } from '@/components/WalletButton';
 import { ClientApp } from '@/components/ClientApp';
+import { GlobalStats } from '@/components/GlobalStats';
+import { RecentActivity } from '@/components/RecentActivity';
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col">
-      <div className="container mx-auto px-4 py-4 max-w-4xl flex flex-col flex-1">
+    <main className="h-screen flex flex-col overflow-hidden">
+      <div className="container mx-auto px-4 py-4 max-w-4xl flex flex-col flex-1 min-h-0">
         {/* Header */}
         <header className="flex justify-between items-center mb-2">
           <a href="/" className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity">
@@ -26,7 +28,7 @@ export default function Home() {
           <WalletButton />
         </header>
 
-        {/* Main App - Shows hero when disconnected, RentReclaimer when connected */}
+        {/* Main App */}
         <ClientApp />
 
         {/* Footer */}
@@ -61,6 +63,14 @@ export default function Home() {
             <span>Built by Dequavious</span>
           </div>
         </footer>
+      </div>
+
+      {/* Side Panels - xl screens only, one card each side */}
+      <div className="hidden xl:block fixed left-[calc(50%-36rem)] top-1/2 -translate-y-1/2 w-56">
+        <GlobalStats />
+      </div>
+      <div className="hidden xl:block fixed right-[calc(50%-36rem)] top-1/2 -translate-y-1/2 w-56">
+        <RecentActivity />
       </div>
     </main>
   );

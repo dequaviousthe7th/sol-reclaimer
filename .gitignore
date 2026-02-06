@@ -68,6 +68,7 @@ READMEpriv.md
 .vercel/
 .wrangler/
 .cloudflare/
+**/.dev.vars
 
 # Debug
 .npm
