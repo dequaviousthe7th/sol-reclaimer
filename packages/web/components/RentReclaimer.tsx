@@ -5,7 +5,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   RentReclaimer as RentReclaimerCore,
   ScanResult,
-  TokenAccountInfo,
   formatSol,
   CloseAccountsResult
 } from '@solreclaimer/core';
@@ -37,14 +36,9 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
     setScanResult(null);
 
     try {
-      console.log('Connection endpoint:', connection.rpcEndpoint);
-      console.log('Scanning wallet:', publicKey.toBase58());
-
       try {
-        const balance = await connection.getBalance(publicKey);
-        console.log('Wallet SOL balance:', balance / 1e9);
+        await connection.getBalance(publicKey);
       } catch (connErr) {
-        console.error('Connection test failed:', connErr);
         throw new Error(`RPC connection failed: ${connErr}`);
       }
 
@@ -53,9 +47,6 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
       });
 
       const result = await reclaimer.scan(publicKey);
-      console.log('Scan result:', JSON.stringify(result, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      , 2));
       setScanResult(result);
 
       const allSelected = new Set(
@@ -71,10 +62,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
   }, [publicKey, connection]);
 
   const handleClose = useCallback(async () => {
-    if (!publicKey || !signAllTransactions || !scanResult) {
-      console.log('Missing requirements:', { publicKey: !!publicKey, signAllTransactions: !!signAllTransactions, scanResult: !!scanResult });
-      return;
-    }
+    if (!publicKey || !signAllTransactions || !scanResult) return;
 
     setStatus('closing');
     setError(null);
@@ -84,9 +72,6 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
       const accountsToClose = scanResult.closeableAccounts.filter(
         acc => selectedAccounts.has(acc.pubkey.toBase58())
       );
-
-      console.log('Accounts to close:', accountsToClose.length);
-      console.log('Selected accounts:', selectedAccounts.size);
 
       if (accountsToClose.length === 0) {
         setError('No accounts selected');
@@ -98,7 +83,6 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
         connection: connection,
       });
 
-      console.log('Calling closeWithWallet...');
       const result = await reclaimer.closeWithWallet(
         publicKey,
         signAllTransactions,
@@ -106,13 +90,11 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
         {
           batchSize: 20,
           onProgress: (current, total) => {
-            console.log('Progress:', current, '/', total);
             setProgress({ current, total });
           },
         }
       );
 
-      console.log('Close result:', result);
       setCloseResult(result);
       setStatus('complete');
 
@@ -234,21 +216,6 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
               <button onClick={handleScan} className="btn-primary px-10 py-4 text-lg">
                 Scan Wallet
               </button>
-              {/* DEV ONLY - REMOVE AFTER TESTING */}
-              <button
-                onClick={() => {
-                  setCloseResult({
-                    closedCount: 7,
-                    reclaimedLamports: 14280000,
-                    signatures: ['4xF9kR2pQ7mN8vB3wL5jH6dC9aE1fG2hK7nM4qR8sT3uV6wX9yZ1aB2cD3eF4gH5iJ6kL7mN8oP9q'],
-                  } as any);
-                  setStatus('complete');
-                }}
-                className="mt-4 text-xs text-gray-600 hover:text-gray-400 transition-colors underline"
-              >
-                [Dev] Preview Complete State
-              </button>
-              {/* END DEV ONLY */}
             </div>
           </div>
         )}

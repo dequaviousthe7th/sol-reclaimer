@@ -15,7 +15,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://solreclaimer.net'),
-  title: 'SolReclaimer - Free Solana Account Closer',
+  title: 'SolReclaimer - Reclaim Your Locked SOL',
   description: 'Close empty Solana token accounts and reclaim your SOL. Zero fees, open source.',
   keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolReclaimer'],
   authors: [{ name: 'Dequavious' }],

@@ -4,9 +4,9 @@ import { ClientApp } from '@/components/ClientApp';
 export default function Home() {
   return (
     <main className="h-screen flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-4 max-w-4xl flex flex-col flex-1 min-h-0">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-2">
+      {/* Header — aligns with side panels on xl */}
+      <header className="flex justify-between items-center pt-4 px-4 mb-2 mx-auto w-full max-w-4xl xl:max-w-none xl:px-[calc(50vw-38.5rem)]">
+        <div className="xl:w-64 xl:flex xl:justify-center">
           <a href="/" className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,9 +23,13 @@ export default function Home() {
               <p className="text-xs text-gray-500">Zero fees</p>
             </div>
           </a>
+        </div>
+        <div className="xl:w-64 xl:flex xl:justify-center">
           <WalletButton />
-        </header>
+        </div>
+      </header>
 
+      <div className="container mx-auto px-4 pb-4 max-w-4xl flex flex-col flex-1 min-h-0">
         {/* Main App */}
         <ClientApp />
 
