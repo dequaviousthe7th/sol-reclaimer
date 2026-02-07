@@ -36,6 +36,7 @@ const ALLOWED_METHODS = new Set([
   'getBalance',
   'getAccountInfo',
   'getParsedTokenAccountsByOwner',
+  'getTokenAccountsByOwner',
   'getLatestBlockhash',
   'sendRawTransaction',
   'simulateTransaction',
