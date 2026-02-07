@@ -6,6 +6,19 @@ import { useState } from 'react';
 import { useProvidersLoaded } from './LazyProviders';
 import { WalletButton } from './WalletButton';
 import { InfoModal } from './InfoModal';
+import { GlobalStats } from './GlobalStats';
+import { RecentActivity } from './RecentActivity';
+
+const SidePanels = () => (
+  <>
+    <div className="hidden xl:block fixed left-[calc(50%-38.5rem)] top-[calc(50%-4rem)] -translate-y-1/2 w-64">
+      <GlobalStats />
+    </div>
+    <div className="hidden xl:block fixed right-[calc(50%-38.5rem)] top-[calc(50%-4rem)] -translate-y-1/2 w-64">
+      <RecentActivity />
+    </div>
+  </>
+);
 
 // Lazy load the RentReclaimer component
 const RentReclaimer = dynamic(
@@ -182,6 +195,7 @@ const ClientAppInner = () => {
       <>
         <HeroSection connected={false} onOpenInfo={() => setInfoModalOpen(true)} />
         <InfoModal open={infoModalOpen} onClose={() => setInfoModalOpen(false)} />
+        <SidePanels />
       </>
     );
   }
@@ -191,6 +205,7 @@ const ClientAppInner = () => {
       <>
         <HeroSection connected={true} onGetStarted={() => setShowReclaimer(true)} onOpenInfo={() => setInfoModalOpen(true)} />
         <InfoModal open={infoModalOpen} onClose={() => setInfoModalOpen(false)} />
+        <SidePanels />
       </>
     );
   }

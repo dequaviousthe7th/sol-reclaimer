@@ -154,7 +154,7 @@ async function handleGetStats(request: Request, env: Env): Promise<Response> {
   return jsonResponse(stats, 200, request, env);
 }
 
-async function handlePostStats(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+async function handlePostStats(request: Request, env: Env): Promise<Response> {
   let body: StatsBody;
   try {
     body = await request.json() as StatsBody;
@@ -175,51 +175,45 @@ async function handlePostStats(request: Request, env: Env, ctx: ExecutionContext
     return jsonResponse({ error: 'Invalid body' }, 400, request, env);
   }
 
-  // Non-blocking KV updates
-  ctx.waitUntil(
-    (async () => {
-      // Update global stats
-      const rawGlobal = await env.STATS.get('stats:global');
-      const global: GlobalStats = rawGlobal
-        ? JSON.parse(rawGlobal)
-        : { totalSolReclaimed: 0, totalAccountsClosed: 0, totalWallets: 0 };
+  // Synchronous KV updates (avoids race conditions with rapid requests)
+  const [rawGlobal, rawWallet, rawRecent] = await Promise.all([
+    env.STATS.get('stats:global'),
+    env.STATS.get(`wallet:${wallet}`),
+    env.STATS.get('stats:recent'),
+  ]);
 
-      // Check if wallet is new
-      const rawWallet = await env.STATS.get(`wallet:${wallet}`);
-      const walletStats: WalletStats = rawWallet
-        ? JSON.parse(rawWallet)
-        : { totalSolReclaimed: 0, totalAccountsClosed: 0, uses: 0 };
+  const global: GlobalStats = rawGlobal
+    ? JSON.parse(rawGlobal)
+    : { totalSolReclaimed: 0, totalAccountsClosed: 0, totalWallets: 0 };
 
-      const isNewWallet = walletStats.uses === 0;
+  const walletStats: WalletStats = rawWallet
+    ? JSON.parse(rawWallet)
+    : { totalSolReclaimed: 0, totalAccountsClosed: 0, uses: 0 };
 
-      // Update wallet stats
-      walletStats.totalSolReclaimed += solReclaimed;
-      walletStats.totalAccountsClosed += accountsClosed;
-      walletStats.uses += 1;
+  const isNewWallet = walletStats.uses === 0;
 
-      // Update global stats
-      global.totalSolReclaimed += solReclaimed;
-      global.totalAccountsClosed += accountsClosed;
-      if (isNewWallet) global.totalWallets += 1;
+  walletStats.totalSolReclaimed += solReclaimed;
+  walletStats.totalAccountsClosed += accountsClosed;
+  walletStats.uses += 1;
 
-      // Update recent activity
-      const rawRecent = await env.STATS.get('stats:recent');
-      const recent: RecentReclaim[] = rawRecent ? JSON.parse(rawRecent) : [];
-      recent.unshift({
-        wallet,
-        solReclaimed,
-        accountsClosed,
-        timestamp: Date.now(),
-      });
-      if (recent.length > MAX_RECENT) recent.length = MAX_RECENT;
+  global.totalSolReclaimed += solReclaimed;
+  global.totalAccountsClosed += accountsClosed;
+  if (isNewWallet) global.totalWallets += 1;
 
-      await Promise.all([
-        env.STATS.put('stats:global', JSON.stringify(global)),
-        env.STATS.put(`wallet:${wallet}`, JSON.stringify(walletStats)),
-        env.STATS.put('stats:recent', JSON.stringify(recent)),
-      ]);
-    })(),
-  );
+  const recent: RecentReclaim[] = rawRecent ? JSON.parse(rawRecent) : [];
+  recent.unshift({
+    wallet,
+    solReclaimed,
+    accountsClosed,
+    timestamp: Date.now(),
+  });
+  if (recent.length > MAX_RECENT) recent.length = MAX_RECENT;
+
+  await Promise.all([
+    env.STATS.put('stats:global', JSON.stringify(global)),
+    env.STATS.put(`wallet:${wallet}`, JSON.stringify(walletStats)),
+    env.STATS.put('stats:recent', JSON.stringify(recent)),
+  ]);
 
   return jsonResponse({ ok: true }, 200, request, env);
 }
@@ -248,7 +242,7 @@ export default {
 
     // Route: POST /api/stats
     if (url.pathname === '/api/stats' && request.method === 'POST') {
-      return handlePostStats(request, env, ctx);
+      return handlePostStats(request, env);
     }
 
     // Route: GET /api/stats/recent

@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useState, useEffect, useRef } from 'react';
+import { FC, useState, useEffect, useRef, useCallback } from 'react';
 
 interface RecentReclaim {
   wallet: string;
@@ -8,6 +8,8 @@ interface RecentReclaim {
   accountsClosed: number;
   timestamp: number;
 }
+
+const POLL_INTERVAL = 15_000; // 15 seconds
 
 function truncateWallet(address: string): string {
   if (address.length <= 8) return address;
@@ -27,10 +29,10 @@ function timeAgo(timestamp: number): string {
 
 export const RecentActivity: FC = () => {
   const [reclaims, setReclaims] = useState<RecentReclaim[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const prevCountRef = useRef(0);
 
-  useEffect(() => {
+  const fetchRecent = useCallback(() => {
     const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
     if (!workerUrl) return;
 
@@ -38,63 +40,52 @@ export const RecentActivity: FC = () => {
       .then((res) => res.ok ? res.json() : null)
       .then((data: RecentReclaim[] | null) => {
         if (data && data.length > 0) {
-          setReclaims(data);
+          setReclaims(data.slice(0, 5));
         }
       })
       .catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (reclaims.length <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % reclaims.length);
-    }, 4000);
-    return () => clearInterval(intervalRef.current);
-  }, [reclaims.length]);
+    fetchRecent();
+    const id = setInterval(fetchRecent, POLL_INTERVAL);
+    return () => clearInterval(id);
+  }, [fetchRecent]);
 
-  if (reclaims.length === 0) {
-    return (
-      <div className="card p-5">
-        <p className="text-xs text-gray-500 uppercase tracking-wide font-medium mb-3">Recent Activity</p>
-        <p className="text-sm text-gray-600">No activity yet</p>
-      </div>
-    );
-  }
-
-  const current = reclaims[activeIndex];
+  // Auto-scroll to top when new entries arrive
+  useEffect(() => {
+    if (reclaims.length > prevCountRef.current && scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+    prevCountRef.current = reclaims.length;
+  }, [reclaims]);
 
   return (
-    <div className="card p-5">
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Recent Activity</p>
-        <div className="w-2 h-2 rounded-full bg-solana-green animate-pulse"></div>
+    <div className="card p-5 h-[320px] flex flex-col group/activity">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Live Activity</p>
+        <div className="w-1.5 h-1.5 rounded-full bg-solana-green animate-pulse"></div>
       </div>
-      <div className="min-h-[3.5rem] flex flex-col justify-center">
-        <div key={activeIndex} className="modal-enter">
-          <p className="text-sm text-white font-medium">
-            <span className="text-solana-purple font-mono">{truncateWallet(current.wallet)}</span>
-            {' '}reclaimed
-          </p>
-          <div className="flex items-center justify-between mt-1.5">
-            <span className="text-lg font-bold text-solana-green">
-              +{current.solReclaimed.toFixed(4)} SOL
-            </span>
-            <span className="text-xs text-gray-500">{timeAgo(current.timestamp)}</span>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">
-            {current.accountsClosed} account{current.accountsClosed !== 1 ? 's' : ''} closed
-          </p>
-        </div>
-      </div>
-      {reclaims.length > 1 && (
-        <div className="flex justify-center gap-1 mt-3">
-          {reclaims.map((_, i) => (
+      {reclaims.length === 0 ? (
+        <p className="text-sm text-gray-600 py-4">No activity yet</p>
+      ) : (
+        <div ref={scrollRef} className="overflow-y-auto min-h-0 flex-1 pr-3 activity-scroll">
+          {reclaims.map((r, i) => (
             <div
-              key={i}
-              className={`w-1 h-1 rounded-full transition-colors ${
-                i === activeIndex ? 'bg-solana-purple' : 'bg-gray-700'
+              key={`${r.wallet}-${r.timestamp}`}
+              className={`flex items-center justify-between py-2.5 ${
+                i !== reclaims.length - 1 ? 'border-b border-[#1a1a1f]' : ''
               }`}
-            />
+            >
+              <div className="min-w-0">
+                <span className="text-sm font-mono text-solana-purple">{truncateWallet(r.wallet)}</span>
+                <p className="text-xs text-gray-600 mt-0.5">{r.accountsClosed} acct{r.accountsClosed !== 1 ? 's' : ''} closed</p>
+              </div>
+              <div className="text-right flex-shrink-0 ml-3">
+                <span className="text-sm font-semibold text-solana-green">+{r.solReclaimed.toFixed(3)}</span>
+                <p className="text-[11px] text-gray-600 mt-0.5">{timeAgo(r.timestamp)}</p>
+              </div>
+            </div>
           ))}
         </div>
       )}

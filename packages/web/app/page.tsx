@@ -1,7 +1,5 @@
 import { WalletButton } from '@/components/WalletButton';
 import { ClientApp } from '@/components/ClientApp';
-import { GlobalStats } from '@/components/GlobalStats';
-import { RecentActivity } from '@/components/RecentActivity';
 
 export default function Home() {
   return (
@@ -65,13 +63,6 @@ export default function Home() {
         </footer>
       </div>
 
-      {/* Side Panels - xl screens only, one card each side */}
-      <div className="hidden xl:block fixed left-[calc(50%-36rem)] top-1/2 -translate-y-1/2 w-56">
-        <GlobalStats />
-      </div>
-      <div className="hidden xl:block fixed right-[calc(50%-36rem)] top-1/2 -translate-y-1/2 w-56">
-        <RecentActivity />
-      </div>
     </main>
   );
 }
