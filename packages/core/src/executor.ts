@@ -7,12 +7,16 @@ import {
   TransactionSignature,
   SendOptions,
   Signer,
+  AddressLookupTableAccount,
 } from '@solana/web3.js';
 import { TransactionBuilder } from './builder';
 import {
   TokenAccountInfo,
   CloseAccountsOptions,
   CloseAccountsResult,
+  CloseWithALTOptions,
+  CloseWithALTResult,
+  ClosePhase,
   LAMPORTS_PER_SOL,
 } from './types';
 
@@ -283,5 +287,126 @@ export class TransactionExecutor {
         error: error instanceof Error ? error.message : String(error),
       };
     }
+  }
+
+  /**
+   * ALT-aware close flow with automatic fallback to legacy transactions.
+   * For <= 5 accounts, skips ALT and uses legacy with small batch.
+   */
+  async closeAccountsWithWalletALT(
+    accounts: TokenAccountInfo[],
+    walletPublicKey: PublicKey,
+    signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>,
+    options: CloseWithALTOptions = {}
+  ): Promise<CloseWithALTResult> {
+    const { batchSize, simulate = false, onPhase, onProgress } = options;
+
+    // Small account optimization: skip ALT for <= 5 accounts
+    if (accounts.length <= 5) {
+      return this.closeWithLegacyFallback(
+        accounts, walletPublicKey, signAllTransactions, batchSize ?? 5, simulate, onPhase, onProgress
+      );
+    }
+
+    try {
+      // Phase 1: Build ALT setup transactions
+      onPhase?.('building-alt');
+      const { transactions: altSetupTxs, altAddress } =
+        await this.builder.buildALTSetupTransactions(accounts, walletPublicKey);
+
+      // Phase 2: Sign ALT setup transactions
+      onPhase?.('signing-alt');
+      const signedAltTxs = await signAllTransactions(altSetupTxs);
+
+      // Phase 3: Send and confirm ALT setup transactions
+      onPhase?.('confirming-alt');
+      for (const signedTx of signedAltTxs) {
+        await this.sendAndConfirm(signedTx);
+      }
+
+      // Phase 4: Wait for ALT activation
+      onPhase?.('waiting-alt');
+      const altAccount = await this.waitForALTActivation(altAddress);
+
+      // Phase 5: Build close transactions with ALT
+      onPhase?.('building-close');
+      const closeBatchSize = batchSize ?? 15;
+      const closeTxs = await this.builder.buildCloseTransactionsWithALT(
+        accounts, walletPublicKey, walletPublicKey, walletPublicKey,
+        altAccount, altAddress, closeBatchSize,
+      );
+
+      // Phase 6: Sign close transactions
+      onPhase?.('signing-close');
+      const signedCloseTxs = await signAllTransactions(closeTxs);
+
+      // Phase 7: Send and confirm close transactions
+      onPhase?.('confirming-close');
+      const result = await this.executeSigned(
+        signedCloseTxs, accounts, {
+          onBatchStart: (index, total) => onProgress?.(index + 1, total),
+          onBatchComplete: (index, signature) => onProgress?.(index + 1, signedCloseTxs.length, signature),
+          simulate,
+        }
+      );
+
+      return { ...result, altAddress: altAddress.toBase58(), usedALT: true };
+
+    } catch (altError) {
+      console.warn('ALT setup failed, falling back to legacy transactions:', altError);
+      onPhase?.('fallback-legacy');
+      return this.closeWithLegacyFallback(
+        accounts, walletPublicKey, signAllTransactions, batchSize ?? 10, simulate, onPhase, onProgress
+      );
+    }
+  }
+
+  private async closeWithLegacyFallback(
+    accounts: TokenAccountInfo[],
+    walletPublicKey: PublicKey,
+    signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>,
+    fallbackBatchSize: number,
+    simulate: boolean,
+    onPhase?: (phase: ClosePhase) => void,
+    onProgress?: (current: number, total: number, signature?: string) => void,
+  ): Promise<CloseWithALTResult> {
+    onPhase?.('building-close');
+    const legacyTxs = await this.builder.buildLegacyCloseTransactions(
+      accounts, walletPublicKey, walletPublicKey, walletPublicKey, fallbackBatchSize,
+    );
+
+    onPhase?.('signing-close');
+    const signedLegacyTxs = await signAllTransactions(legacyTxs);
+
+    onPhase?.('confirming-close');
+    const result = await this.executeSigned(
+      signedLegacyTxs, accounts, {
+        onBatchStart: (index, total) => onProgress?.(index + 1, total),
+        onBatchComplete: (index, signature) => onProgress?.(index + 1, signedLegacyTxs.length, signature),
+        simulate,
+      }
+    );
+
+    return { ...result, usedALT: false };
+  }
+
+  /**
+   * Poll until the ALT is active and has addresses populated.
+   */
+  private async waitForALTActivation(
+    altAddress: PublicKey,
+    maxWaitMs: number = 15_000,
+  ): Promise<AddressLookupTableAccount> {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < maxWaitMs) {
+      const response = await this.connection.getAddressLookupTable(altAddress);
+      if (response.value && response.value.isActive()) {
+        return response.value;
+      }
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    throw new Error('ALT activation timed out');
   }
 }

@@ -6,11 +6,13 @@ import {
   RentReclaimerConfig,
   ScanResult,
   CloseAccountsResult,
+  CloseWithALTOptions,
+  CloseWithALTResult,
   TokenAccountInfo,
   LAMPORTS_PER_SOL,
   TOKEN_ACCOUNT_RENT,
 } from './types';
-import type { Transaction } from '@solana/web3.js';
+import type { Transaction, VersionedTransaction } from '@solana/web3.js';
 
 export class RentReclaimer {
   private connection: Connection;
@@ -116,6 +118,44 @@ export class RentReclaimer {
         onBatchComplete: (index, signature) => {
           options?.onProgress?.(index + 1, this.builder.calculateTotalBatches(targetAccounts.length), signature);
         },
+      }
+    );
+  }
+
+  async closeWithWalletALT(
+    walletPublicKey: string | PublicKey,
+    signAllTransactions: <T extends Transaction | VersionedTransaction>(transactions: T[]) => Promise<T[]>,
+    accounts?: TokenAccountInfo[],
+    options?: CloseWithALTOptions,
+  ): Promise<CloseWithALTResult> {
+    const pubkey = typeof walletPublicKey === 'string'
+      ? new PublicKey(walletPublicKey)
+      : walletPublicKey;
+
+    const targetAccounts = accounts ?? (await this.scan(pubkey)).closeableAccounts;
+
+    if (targetAccounts.length === 0) {
+      return {
+        success: true,
+        closedCount: 0,
+        failedCount: 0,
+        reclaimedLamports: 0,
+        reclaimedSol: 0,
+        signatures: [],
+        errors: [],
+        usedALT: false,
+      };
+    }
+
+    return this.executor.closeAccountsWithWalletALT(
+      targetAccounts,
+      pubkey,
+      signAllTransactions,
+      {
+        batchSize: options?.batchSize,
+        simulate: options?.simulate,
+        onPhase: options?.onPhase,
+        onProgress: options?.onProgress,
       }
     );
   }

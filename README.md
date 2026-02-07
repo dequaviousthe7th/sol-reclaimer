@@ -35,7 +35,7 @@ Every token account on Solana holds ~0.00203 SOL in rent. When you swap, trade, 
 | Feature | Description |
 |---------|-------------|
 | **Zero Fees** | Unlike other tools that take 5-10%, we take nothing |
-| **Batch Processing** | Close up to 20 accounts per transaction |
+| **Batch Processing** | Close up to 15 accounts per transaction using Address Lookup Tables |
 | **Safe** | Only closes accounts with zero balance |
 | **Non-Custodial** | Your keys never leave your wallet |
 | **Secure** | Transactions are simulated before execution |
@@ -108,7 +108,7 @@ Visit **[solreclaimer.net](https://solreclaimer.net)** to use the app.
 ### v1.0.0
 
 **Initial Release**
-- Zero-fee rent reclaiming with batch processing (up to 20 accounts per transaction)
+- Zero-fee rent reclaiming with batch processing using Address Lookup Tables
 - Solana wallet adapter integration with non-custodial client-side signing
 - Transaction simulation before execution for safety
 - Responsive single-page UI with gradient design system

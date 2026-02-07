@@ -6,7 +6,8 @@ import {
   RentReclaimer as RentReclaimerCore,
   ScanResult,
   formatSol,
-  CloseAccountsResult
+  CloseAccountsResult,
+  ClosePhase,
 } from '@solreclaimer/core';
 import { AccountList } from './AccountList';
 import { TransactionProgress } from './TransactionProgress';
@@ -26,6 +27,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
   const [selectedAccounts, setSelectedAccounts] = useState<Set<string>>(new Set());
   const [closeResult, setCloseResult] = useState<CloseAccountsResult | null>(null);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
+  const [phase, setPhase] = useState<ClosePhase | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleScan = useCallback(async () => {
@@ -67,6 +69,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
     setStatus('closing');
     setError(null);
     setProgress({ current: 0, total: 0 });
+    setPhase(null);
 
     try {
       const accountsToClose = scanResult.closeableAccounts.filter(
@@ -83,12 +86,12 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
         connection: connection,
       });
 
-      const result = await reclaimer.closeWithWallet(
+      const result = await reclaimer.closeWithWalletALT(
         publicKey,
         signAllTransactions,
         accountsToClose,
         {
-          batchSize: 20,
+          onPhase: (p) => setPhase(p),
           onProgress: (current, total) => {
             setProgress({ current, total });
           },
@@ -123,6 +126,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
     setSelectedAccounts(new Set());
     setCloseResult(null);
     setProgress({ current: 0, total: 0 });
+    setPhase(null);
     setError(null);
   }, []);
 
@@ -288,7 +292,28 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
 
         {/* Closing State */}
         {status === 'closing' && (
-          <TransactionProgress current={progress.current} total={progress.total} />
+          <div>
+            {phase && phase !== 'confirming-close' && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-6 relative">
+                  <div className="absolute inset-0 rounded-full border-4 border-solana-purple/20"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-solana-purple animate-spin"></div>
+                </div>
+                <p className="text-gray-400">
+                  {phase === 'building-alt' && 'Preparing address lookup table...'}
+                  {phase === 'signing-alt' && 'Please approve the setup transaction in your wallet'}
+                  {phase === 'confirming-alt' && 'Confirming setup transaction...'}
+                  {phase === 'waiting-alt' && 'Activating lookup table...'}
+                  {phase === 'building-close' && 'Building close transactions...'}
+                  {phase === 'signing-close' && 'Please approve the close transactions in your wallet'}
+                  {phase === 'fallback-legacy' && 'Using standard transactions...'}
+                </p>
+              </div>
+            )}
+            {(!phase || phase === 'confirming-close') && (
+              <TransactionProgress current={progress.current} total={progress.total} />
+            )}
+          </div>
         )}
 
         {/* Complete State */}

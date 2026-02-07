@@ -48,3 +48,28 @@ export interface RentReclaimerConfig {
 
 export const LAMPORTS_PER_SOL = 1_000_000_000;
 export const TOKEN_ACCOUNT_RENT = 2039280; // ~0.00203928 SOL
+
+/** Phases of the ALT-aware close flow */
+export type ClosePhase =
+  | 'building-alt'
+  | 'signing-alt'
+  | 'confirming-alt'
+  | 'waiting-alt'
+  | 'building-close'
+  | 'signing-close'
+  | 'confirming-close'
+  | 'fallback-legacy';
+
+/** Options for the ALT-aware wallet close flow */
+export interface CloseWithALTOptions {
+  batchSize?: number;
+  simulate?: boolean;
+  onPhase?: (phase: ClosePhase) => void;
+  onProgress?: (current: number, total: number, signature?: string) => void;
+}
+
+/** Result from the ALT-aware close flow */
+export interface CloseWithALTResult extends CloseAccountsResult {
+  altAddress?: string;
+  usedALT: boolean;
+}
