@@ -38,7 +38,7 @@ const ALLOWED_METHODS = new Set([
   'getParsedTokenAccountsByOwner',
   'getTokenAccountsByOwner',
   'getLatestBlockhash',
-  'sendRawTransaction',
+  'sendTransaction',
   'simulateTransaction',
   'getSignatureStatuses',
   'getTransaction',
@@ -49,6 +49,7 @@ const ALLOWED_METHODS = new Set([
   'getFeeForMessage',
   'isBlockhashValid',
   'getRecentPrioritizationFees',
+  'getAddressLookupTable',
 ]);
 
 // In-memory rate limiting (per-isolate, resets on cold start)
