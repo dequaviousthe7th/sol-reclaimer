@@ -245,16 +245,57 @@ export class TransactionExecutor {
       );
     }
 
-    const confirmation = await this.connection.confirmTransaction(
-      signature,
-      'confirmed'
-    );
+    // Use custom polling instead of confirmTransaction to avoid WebSocket issues
+    // when using HTTP-only RPC proxy (e.g., Cloudflare Worker)
+    const confirmation = await this.pollForConfirmation(signature, 'confirmed');
 
     if (confirmation.value.err) {
       throw new Error(`Transaction failed: ${JSON.stringify(confirmation.value.err)}`);
     }
 
     return signature;
+  }
+
+  /**
+   * Poll for transaction confirmation using HTTP-only RPC calls.
+   * This replaces connection.confirmTransaction() which requires WebSocket support.
+   */
+  private async pollForConfirmation(
+    signature: string,
+    commitment: 'processed' | 'confirmed' | 'finalized' = 'confirmed',
+    timeoutMs: number = 60000,
+    pollIntervalMs: number = 2000
+  ): Promise<{ value: { err: any } }> {
+    const start = Date.now();
+
+    while (Date.now() - start < timeoutMs) {
+      try {
+        const statuses = await this.connection.getSignatureStatuses([signature], {
+          searchTransactionHistory: false,
+        });
+
+        const status = statuses.value[0];
+
+        if (status) {
+          // Check if we have the desired commitment level
+          const hasConfirmation =
+            (commitment === 'processed' && status.confirmationStatus) ||
+            (commitment === 'confirmed' &&
+              (status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized')) ||
+            (commitment === 'finalized' && status.confirmationStatus === 'finalized');
+
+          if (hasConfirmation) {
+            return { value: { err: status.err } };
+          }
+        }
+      } catch (e) {
+        // Ignore polling errors, continue trying
+      }
+
+      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+    }
+
+    throw new Error('Transaction confirmation timeout');
   }
 
   async simulateClose(
