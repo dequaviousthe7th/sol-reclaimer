@@ -78,7 +78,7 @@ function corsHeaders(request: Request, env: Env): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': allowed ? origin : 'https://solreclaimer.net',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, solana-client',
     'Access-Control-Max-Age': '86400',
   };
 }
