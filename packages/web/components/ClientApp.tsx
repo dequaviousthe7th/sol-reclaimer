@@ -40,13 +40,13 @@ const RentReclaimer = dynamic(
 
 // Hero section component
 const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boolean; onGetStarted?: () => void; onOpenInfo?: () => void }) => (
-  <section className="text-center py-8 flex-1 flex flex-col justify-center">
-    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111113] border border-[#222228] text-solana-purple text-sm font-medium mb-5 self-center">
+  <section className="text-center py-8 xl:py-2 flex-1 flex flex-col justify-center">
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#111113] border border-[#222228] text-solana-purple text-sm font-medium mb-3 xl:mb-5 self-center">
       <span className="w-2 h-2 rounded-full bg-solana-green animate-pulse"></span>
       100% Free - No Hidden Fees
     </div>
 
-    <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-5">
+    <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-2 xl:mb-5 order-first xl:order-none">
       <span className="text-white">Reclaim Your</span>
       <br />
       <span className="gradient-text">Locked SOL</span>
@@ -59,13 +59,13 @@ const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boole
     {onOpenInfo && (
       <button
         onClick={onOpenInfo}
-        className="text-sm text-gray-500 hover:text-solana-purple transition-colors mb-6 underline underline-offset-2"
+        className="text-sm text-gray-500 hover:text-solana-purple transition-colors mb-6 xl:mb-3 underline underline-offset-2"
       >
         How does this work?
       </button>
     )}
 
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 xl:mb-4">
       <div className="gradient-border">
         <div className="px-6 py-3">
           {connected ? (
@@ -80,7 +80,7 @@ const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boole
     </div>
 
     {/* Stats */}
-    <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto mb-8">
+    <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto mb-8 xl:mb-4">
       <div className="text-center">
         <div className="text-2xl sm:text-3xl font-bold text-solana-green mb-1">0%</div>
         <div className="text-[10px] sm:text-sm text-gray-500">Fees</div>
@@ -101,7 +101,7 @@ const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boole
     </div>
 
     {/* How it works */}
-    <div className="grid md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+    <div className="grid md:grid-cols-3 gap-3 sm:gap-4 mb-6 xl:mb-3">
       <FeatureCard
         icon={
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boole
     </div>
 
     {/* Mobile Price Ticker — below trust badges */}
-    <div className="mt-4">
+    <div className="mt-2">
       <MobilePriceBar />
     </div>
   </section>

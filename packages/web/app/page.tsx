@@ -5,7 +5,7 @@ import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
 export default function Home() {
   return (
     <PriceProvider>
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen xl:h-screen xl:overflow-hidden flex flex-col">
       {/* Header — aligns with side panels on xl */}
       <header className="flex justify-between items-center pt-4 px-4 mb-2 mx-auto w-full max-w-4xl xl:max-w-none xl:px-[calc(50vw-38.5rem)]">
         <div className="xl:w-64 xl:flex xl:justify-center">
