@@ -304,6 +304,36 @@ body {
   animation: modal-in 0.2s ease-out;
 }
 
+/* Draggable panel styles */
+.panel-wrapper {
+  transition: box-shadow 0.3s ease;
+}
+
+.panel-unlocked {
+  cursor: grab;
+  box-shadow: 0 0 0 1px rgba(153, 69, 255, 0.3);
+  border-radius: 1rem;
+}
+
+.panel-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 0 20px rgba(153, 69, 255, 0.2), 0 0 0 1px rgba(153, 69, 255, 0.4);
+  z-index: 100;
+}
+
+/* Lock button */
+.lock-btn {
+  transition: all 0.2s ease;
+}
+
+.lock-btn:hover {
+  transform: scale(1.1);
+}
+
+.lock-btn:active {
+  transform: scale(0.95);
+}
+
 /* Touch feedback for interactive elements */
 @media (hover: none) and (pointer: coarse) {
   .card-hover:active {

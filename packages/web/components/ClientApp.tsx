@@ -2,7 +2,7 @@
 
 import { useWallet } from '@solana/wallet-adapter-react';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useProvidersLoaded } from './LazyProviders';
 import { WalletButton } from './WalletButton';
 import { InfoModal } from './InfoModal';
@@ -11,16 +11,181 @@ import { RecentActivity } from './RecentActivity';
 import { MobileStats } from './MobileStats';
 import { MobilePriceBar } from './PriceTicker';
 
-const SidePanels = () => (
-  <>
-    <div className="hidden xl:block fixed left-[calc(50%-38.5rem)] top-[calc(50%-4rem)] -translate-y-1/2 w-64">
-      <GlobalStats />
-    </div>
-    <div className="hidden xl:block fixed right-[calc(50%-38.5rem)] top-[calc(50%-4rem)] -translate-y-1/2 w-64">
-      <RecentActivity />
-    </div>
-  </>
+const LockIcon = ({ locked }: { locked: boolean }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    {locked ? (
+      <>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </>
+    ) : (
+      <>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+      </>
+    )}
+  </svg>
 );
+
+interface DraggablePanelProps {
+  children: React.ReactNode;
+  side: 'left' | 'right';
+  selfRef: React.RefObject<HTMLDivElement>;
+  otherRef: React.RefObject<HTMLDivElement>;
+}
+
+const DraggablePanel = ({ children, side, selfRef, otherRef }: DraggablePanelProps) => {
+  const [locked, setLocked] = useState(true);
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const dragState = useRef({
+    isDragging: false,
+    startMouseX: 0,
+    startMouseY: 0,
+    baseX: 0,
+    baseY: 0,
+    lastX: 0,
+    lastY: 0,
+  });
+
+  const handleToggleLock = useCallback(() => {
+    if (locked && selfRef.current) {
+      const rect = selfRef.current.getBoundingClientRect();
+      setPosition({ x: rect.left, y: rect.top });
+    }
+    setLocked((prev) => !prev);
+  }, [locked, selfRef]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (locked || !position || !selfRef.current) return;
+      if ((e.target as HTMLElement).closest('.lock-btn')) return;
+
+      e.preventDefault();
+      const ds = dragState.current;
+      ds.isDragging = true;
+      ds.startMouseX = e.clientX;
+      ds.startMouseY = e.clientY;
+      ds.baseX = position.x;
+      ds.baseY = position.y;
+      ds.lastX = position.x;
+      ds.lastY = position.y;
+      document.body.style.userSelect = 'none';
+      selfRef.current.classList.add('panel-dragging');
+    },
+    [locked, position, selfRef]
+  );
+
+  useEffect(() => {
+    if (locked) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const ds = dragState.current;
+      if (!ds.isDragging || !selfRef.current) return;
+
+      const el = selfRef.current;
+      const pw = el.offsetWidth;
+      const ph = el.offsetHeight;
+
+      let nx = ds.baseX + (e.clientX - ds.startMouseX);
+      let ny = ds.baseY + (e.clientY - ds.startMouseY);
+
+      // Clamp to viewport
+      nx = Math.max(0, Math.min(window.innerWidth - pw, nx));
+      ny = Math.max(0, Math.min(window.innerHeight - ph, ny));
+
+      // Collision detection with other panel
+      if (otherRef.current) {
+        const o = otherRef.current.getBoundingClientRect();
+        const s = { left: nx, top: ny, right: nx + pw, bottom: ny + ph };
+
+        if (!(s.right < o.left || s.left > o.right || s.bottom < o.top || s.top > o.bottom)) {
+          const candidates = [
+            { x: o.left - pw, y: ny, d: Math.abs(nx - (o.left - pw)) },
+            { x: o.right, y: ny, d: Math.abs(nx - o.right) },
+            { x: nx, y: o.top - ph, d: Math.abs(ny - (o.top - ph)) },
+            { x: nx, y: o.bottom, d: Math.abs(ny - o.bottom) },
+          ];
+          const best = candidates.reduce((a, b) => (a.d < b.d ? a : b));
+          nx = Math.max(0, Math.min(window.innerWidth - pw, best.x));
+          ny = Math.max(0, Math.min(window.innerHeight - ph, best.y));
+        }
+      }
+
+      // GPU-accelerated transform during drag
+      el.style.transform = `translate3d(${nx - ds.baseX}px, ${ny - ds.baseY}px, 0)`;
+      ds.lastX = nx;
+      ds.lastY = ny;
+    };
+
+    const handleMouseUp = () => {
+      const ds = dragState.current;
+      if (!ds.isDragging || !selfRef.current) return;
+      ds.isDragging = false;
+      document.body.style.userSelect = '';
+      selfRef.current.classList.remove('panel-dragging');
+      selfRef.current.style.transform = '';
+      setPosition({ x: ds.lastX, y: ds.lastY });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [locked, selfRef, otherRef]);
+
+  const hasCustomPosition = position !== null;
+  const isUnlocked = !locked;
+
+  return (
+    <div
+      ref={selfRef}
+      className={
+        hasCustomPosition
+          ? `hidden xl:block fixed w-64 panel-wrapper${isUnlocked ? ' panel-unlocked' : ''}`
+          : `hidden xl:block fixed ${
+              side === 'left' ? 'left-[calc(50%-38.5rem)]' : 'right-[calc(50%-38.5rem)]'
+            } top-[calc(50%-4rem)] -translate-y-1/2 w-64 panel-wrapper`
+      }
+      style={
+        hasCustomPosition
+          ? { left: position.x, top: position.y, ...(isUnlocked ? { willChange: 'transform' } : {}) }
+          : undefined
+      }
+      onMouseDown={handleMouseDown}
+    >
+      <button
+        className={`lock-btn absolute -bottom-2 left-1/2 -translate-x-1/2 z-10 p-1 rounded-full ${
+          locked
+            ? 'text-gray-500 hover:text-white bg-[#111113] border border-[#222228] hover:border-gray-500'
+            : 'text-solana-purple hover:text-white bg-[#111113] border border-solana-purple/40 hover:border-solana-purple'
+        }`}
+        onClick={handleToggleLock}
+        title={locked ? 'Unlock to drag' : 'Lock position'}
+      >
+        <LockIcon locked={locked} />
+      </button>
+      {children}
+    </div>
+  );
+};
+
+const SidePanels = () => {
+  const leftRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <>
+      <DraggablePanel side="left" selfRef={leftRef} otherRef={rightRef}>
+        <GlobalStats />
+      </DraggablePanel>
+      <DraggablePanel side="right" selfRef={rightRef} otherRef={leftRef}>
+        <RecentActivity />
+      </DraggablePanel>
+    </>
+  );
+};
 
 // Lazy load the RentReclaimer component
 const RentReclaimer = dynamic(
