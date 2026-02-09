@@ -341,3 +341,21 @@ body {
     box-shadow: 0 0 20px rgba(153, 69, 255, 0.08);
   }
 }
+
+/* Admin dashboard table */
+.admin-table th {
+  @apply text-left text-gray-500 uppercase tracking-wide font-medium;
+  font-size: 10px;
+}
+
+.admin-table td {
+  @apply py-2.5 text-sm;
+}
+
+.admin-table tr {
+  @apply border-b border-[#111113];
+}
+
+.admin-table tr:hover {
+  @apply bg-[#111113]/50;
+}
