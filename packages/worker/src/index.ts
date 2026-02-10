@@ -898,6 +898,54 @@ async function handleAdminChart(request: Request, env: Env): Promise<Response> {
 }
 
 // ──────────────────────────────────────────────
+// Price proxy (CoinGecko blocks browser CORS)
+// ──────────────────────────────────────────────
+
+let cachedPrices: { data: string; fetchedAt: number } | null = null;
+const PRICE_CACHE_MS = 30_000; // cache for 30s to avoid hitting CoinGecko rate limits
+
+async function handlePrices(request: Request, env: Env): Promise<Response> {
+  const now = Date.now();
+
+  if (cachedPrices && now - cachedPrices.fetchedAt < PRICE_CACHE_MS) {
+    return new Response(cachedPrices.data, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders(request, env),
+      },
+    });
+  }
+
+  const res = await fetch(
+    'https://api.coingecko.com/api/v3/simple/price?ids=solana,bitcoin&vs_currencies=usd',
+    { headers: { Accept: 'application/json' } },
+  );
+
+  if (!res.ok) {
+    // Return stale cache if available, otherwise error
+    if (cachedPrices) {
+      return new Response(cachedPrices.data, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders(request, env),
+        },
+      });
+    }
+    return jsonResponse({ error: 'Failed to fetch prices' }, 502, request, env);
+  }
+
+  const data = await res.text();
+  cachedPrices = { data, fetchedAt: now };
+
+  return new Response(data, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...corsHeaders(request, env),
+    },
+  });
+}
+
+// ──────────────────────────────────────────────
 // Router
 // ──────────────────────────────────────────────
 
@@ -916,6 +964,11 @@ export default {
     // Route: POST /api/rpc
     if (url.pathname === '/api/rpc' && request.method === 'POST') {
       return handleRpc(request, env);
+    }
+
+    // Route: GET /api/prices
+    if (url.pathname === '/api/prices' && request.method === 'GET') {
+      return handlePrices(request, env);
     }
 
     // Route: GET /api/stats

@@ -24,9 +24,10 @@ export const PriceProvider: FC<{ children: React.ReactNode }> = ({ children }) =
   const [prices, setPrices] = useState<Prices | null>(null);
 
   const fetchPrices = useCallback(() => {
-    fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=solana,bitcoin&vs_currencies=usd'
-    )
+    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
+    if (!workerUrl) return;
+
+    fetch(`${workerUrl}/api/prices`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data?.solana && data?.bitcoin) {
@@ -38,7 +39,7 @@ export const PriceProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 
   useEffect(() => {
     fetchPrices();
-    const id = setInterval(fetchPrices, 15_000);
+    const id = setInterval(fetchPrices, 30_000);
     return () => clearInterval(id);
   }, [fetchPrices]);
 
