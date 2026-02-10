@@ -734,7 +734,7 @@ async function handleAdminDashboard(request: Request, env: Env): Promise<Respons
     rawSocialX,
     rawSocialShareX,
     rawSocialBuiltBy,
-    visitorList,
+    rawActiveVisitors,
     ...rawWeekDays
   ] = await Promise.all([
     env.STATS.get('stats:global'),
@@ -746,7 +746,7 @@ async function handleAdminDashboard(request: Request, env: Env): Promise<Respons
     env.STATS.get('analytics:social:x'),
     env.STATS.get('analytics:social:share-x'),
     env.STATS.get('analytics:social:built-by'),
-    env.STATS.list({ prefix: 'visitor:' }),
+    env.STATS.get('stats:activeVisitors'),
     ...weekDayKeys.map(k => env.STATS.get(k)),
   ]);
 
@@ -787,7 +787,7 @@ async function handleAdminDashboard(request: Request, env: Env): Promise<Respons
   };
 
   const data: AdminDashboardData = {
-    activeVisitors: visitorList.keys.length,
+    activeVisitors: rawActiveVisitors ? parseInt(rawActiveVisitors, 10) : 0,
     globalStats,
     todayViews,
     todayReclaims,
@@ -830,20 +830,10 @@ async function handleAdminVisitors(request: Request, env: Env): Promise<Response
     return jsonResponse({ error: 'Unauthorized' }, 401, request, env);
   }
 
-  // Handle pagination for large visitor counts
-  let totalVisitors = 0;
-  let cursor: string | undefined;
+  const raw = await env.STATS.get('stats:activeVisitors');
+  const activeVisitors = raw ? parseInt(raw, 10) : 0;
 
-  do {
-    const result = await env.STATS.list({
-      prefix: 'visitor:',
-      ...(cursor ? { cursor } : {}),
-    });
-    totalVisitors += result.keys.length;
-    cursor = result.list_complete ? undefined : result.cursor;
-  } while (cursor);
-
-  return jsonResponse({ activeVisitors: totalVisitors }, 200, request, env);
+  return jsonResponse({ activeVisitors }, 200, request, env);
 }
 
 async function handleAdminChart(request: Request, env: Env): Promise<Response> {
@@ -997,5 +987,22 @@ export default {
     }
 
     return jsonResponse({ error: 'Not found' }, 404, request, env);
+  },
+
+  // Cron Trigger: count active visitors every minute and cache the result
+  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+    let totalVisitors = 0;
+    let cursor: string | undefined;
+
+    do {
+      const result = await env.STATS.list({
+        prefix: 'visitor:',
+        ...(cursor ? { cursor } : {}),
+      });
+      totalVisitors += result.keys.length;
+      cursor = result.list_complete ? undefined : result.cursor;
+    } while (cursor);
+
+    await env.STATS.put('stats:activeVisitors', String(totalVisitors));
   },
 };

@@ -12,5 +12,8 @@ id = "4275743e438c4f91a34e6ad09225ffaf"
 # Custom domain: api.solreclaimer.net
 # Set up via Cloudflare dashboard after initial deploy
 
+[triggers]
+crons = ["* * * * *"]
+
 [vars]
 ENVIRONMENT = "production"

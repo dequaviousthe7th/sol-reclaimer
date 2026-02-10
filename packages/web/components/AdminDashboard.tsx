@@ -336,7 +336,6 @@ export const AdminDashboard: FC<AdminDashboardProps> = ({ token, onLogout }) => 
     if (autoRefresh) {
       intervalRef.current = setInterval(() => {
         fetchDashboard();
-        fetchChart(chartStart, chartEnd);
       }, 10_000);
     }
     return () => {

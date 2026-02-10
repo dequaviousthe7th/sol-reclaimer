@@ -9,7 +9,7 @@ interface RecentReclaim {
   timestamp: number;
 }
 
-const POLL_INTERVAL = 5_000; // 5 seconds — near real-time
+const POLL_INTERVAL = 15_000; // 15 seconds
 
 function truncateWallet(address: string): string {
   if (address.length <= 8) return address;
