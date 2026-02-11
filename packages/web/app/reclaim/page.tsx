@@ -5,7 +5,7 @@ import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
 import { Heartbeat, FooterSocialLinks } from '@/components/Heartbeat';
 
 export const metadata: Metadata = {
-  title: 'Reclaim SOL - SolReclaimer',
+  title: 'Reclaim SOL - SolTools',
   description: 'Reclaim locked SOL from empty token accounts. Zero fees, open source.',
 };
 

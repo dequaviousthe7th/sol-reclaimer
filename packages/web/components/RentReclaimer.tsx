@@ -355,7 +355,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
 
             {/* Share on X */}
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just reclaimed ${formatSol(closeResult.reclaimedLamports)} SOL from ${closeResult.closedCount} empty token account${closeResult.closedCount !== 1 ? 's' : ''} with @SolanaReclaimer! #SolReclaimer\n\nReclaim yours for free: solreclaimer.net`)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Just reclaimed ${formatSol(closeResult.reclaimedLamports)} SOL from ${closeResult.closedCount} empty token account${closeResult.closedCount !== 1 ? 's' : ''} with @SolanaReclaimer! #SolReclaimer\n\nReclaim yours for free: soltools.net/reclaim`)}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackSocialClick('share-x')}

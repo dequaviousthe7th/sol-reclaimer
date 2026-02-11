@@ -15,10 +15,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://solreclaimer.net'),
-  title: 'SolReclaimer - Solana Tools',
+  metadataBase: new URL('https://soltools.net'),
+  title: 'SolTools - Solana Tools',
   description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
-  keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolReclaimer', 'vanity wallet'],
+  keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolTools', 'SolReclaimer', 'vanity wallet'],
   authors: [{ name: 'Dequavious' }],
   icons: {
     icon: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: 'SolReclaimer',
+    title: 'SolTools',
     description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
     type: 'website',
     images: [{ url: '/icon-512.png', width: 512, height: 512 }],

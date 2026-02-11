@@ -4,7 +4,7 @@ import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
 import { FooterSocialLinks } from '@/components/Heartbeat';
 
 export const metadata: Metadata = {
-  title: 'Vanity Wallet Generator - SolReclaimer',
+  title: 'Vanity Wallet Generator - SolTools',
   description: 'Generate custom Solana wallet addresses with your chosen prefix or suffix. Free, client-side, secure.',
 };
 

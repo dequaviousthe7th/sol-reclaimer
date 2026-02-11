@@ -9,9 +9,11 @@ const tools = [
     badgeClass: 'bg-solana-green/20 text-solana-green border-solana-green/30',
     description: 'Reclaim locked SOL from empty token accounts. Connect your wallet, scan for reclaimable rent, and close accounts in one click.',
     href: '/reclaim',
+    accentFrom: 'from-solana-purple',
+    accentTo: 'to-solana-green',
     icon: (
-      <svg className="w-6 h-6 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
   },
@@ -22,12 +24,20 @@ const tools = [
     badgeClass: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     description: 'Generate custom Solana wallet addresses with your chosen prefix or suffix. Runs entirely in your browser — keys never leave your device.',
     href: '/vanity',
+    accentFrom: 'from-solana-green',
+    accentTo: 'to-emerald-400',
     icon: (
-      <svg className="w-6 h-6 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
       </svg>
     ),
   },
+];
+
+const features = [
+  { label: 'Zero Fees', icon: '0' },
+  { label: 'Open Source', icon: '{}' },
+  { label: 'No Tracking', icon: '~' },
 ];
 
 export default function HubPage() {
@@ -36,18 +46,29 @@ export default function HubPage() {
     <main className="min-h-screen flex flex-col">
 
       {/* Hero */}
-      <section className="pt-16 sm:pt-24 pb-10 sm:pb-14 text-center px-4">
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center shadow-lg shadow-solana-purple/20">
-            <svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <section className="pt-14 sm:pt-20 pb-8 sm:pb-12 text-center px-4 relative">
+        {/* Floating animated logo */}
+        <div className="flex justify-center mb-5">
+          <div className="float pulse-glow w-[72px] h-[72px] rounded-2xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold gradient-text mb-3">SolReclaimer</h1>
-        <p className="text-gray-400 text-base sm:text-lg max-w-md mx-auto">
+        <h1 className="text-4xl sm:text-5xl font-bold gradient-text mb-2.5">SolTools</h1>
+        <p className="text-gray-400 text-base sm:text-lg max-w-md mx-auto mb-6">
           Free, open-source Solana tools. No fees, no tracking, no compromise.
         </p>
+
+        {/* Feature pills */}
+        <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+          {features.map(f => (
+            <div key={f.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#111113] border border-[#222228] text-xs text-gray-400">
+              <span className="text-solana-purple font-mono font-bold text-[10px]">{f.icon}</span>
+              {f.label}
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Tools grid */}
@@ -56,28 +77,52 @@ export default function HubPage() {
           <Link
             key={tool.id}
             href={tool.href}
-            className="card card-hover group flex flex-col p-5 transition-all"
+            className="card card-hover group flex flex-col overflow-hidden transition-all"
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-[#16161a] flex items-center justify-center border border-[#222228] group-hover:border-solana-purple/40 transition-colors">
-                {tool.icon}
+            {/* Gradient accent top bar */}
+            <div className={`h-[2px] w-full bg-gradient-to-r ${tool.accentFrom} ${tool.accentTo} opacity-60 group-hover:opacity-100 transition-opacity`} />
+
+            <div className="p-5 flex flex-col flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-solana-purple/10 to-solana-green/10 flex items-center justify-center border border-[#222228] text-solana-purple group-hover:border-solana-purple/40 group-hover:shadow-[0_0_15px_rgba(153,69,255,0.15)] transition-all">
+                  {tool.icon}
+                </div>
+                <div>
+                  <h2 className="text-white font-semibold text-sm">{tool.title}</h2>
+                  <span className={`inline-flex px-1.5 py-0.5 text-[9px] font-semibold rounded-full border ${tool.badgeClass}`}>
+                    {tool.badge}
+                  </span>
+                </div>
               </div>
-              <div>
-                <h2 className="text-white font-semibold text-sm">{tool.title}</h2>
-                <span className={`inline-flex px-1.5 py-0.5 text-[9px] font-semibold rounded-full border ${tool.badgeClass}`}>
-                  {tool.badge}
+              <p className="text-gray-400 text-xs leading-relaxed flex-1">{tool.description}</p>
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-solana-purple text-xs font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                  Open tool
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </span>
+                <div className="w-1.5 h-1.5 rounded-full bg-solana-green/60 group-hover:bg-solana-green animate-pulse" />
               </div>
             </div>
-            <p className="text-gray-400 text-xs leading-relaxed flex-1">{tool.description}</p>
-            <span className="mt-4 text-solana-purple text-xs font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
-              Open tool
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </span>
           </Link>
         ))}
+      </section>
+
+      {/* Coming soon teaser */}
+      <section className="px-4 max-w-2xl mx-auto w-full mt-4">
+        <div className="relative rounded-2xl border border-dashed border-[#222228] p-5 flex items-center gap-4 overflow-hidden">
+          <div className="shimmer absolute inset-0 pointer-events-none" />
+          <div className="w-11 h-11 rounded-xl bg-[#111113] flex items-center justify-center border border-[#222228] text-gray-600 flex-shrink-0">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs font-medium">More tools coming soon</p>
+            <p className="text-gray-600 text-[11px] mt-0.5">Token analytics, portfolio tracker, and more in the works.</p>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}

@@ -60,7 +60,7 @@ export const MobileWalletPicker: FC<MobileWalletPickerProps> = ({ open, onClose 
 
   if (!visible) return null;
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://solreclaimer.net';
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : 'https://soltools.net';
 
   return (
     <div

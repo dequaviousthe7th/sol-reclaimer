@@ -221,7 +221,7 @@ body {
     transparent
   );
   background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+  animation: shimmer 6s infinite;
 }
 
 /* Pulse animation */
