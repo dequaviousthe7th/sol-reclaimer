@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
-import { FooterSocialLinks } from '@/components/Heartbeat';
 
 export const metadata: Metadata = {
   title: 'Vanity Wallet Generator - SolTools',
@@ -20,8 +18,7 @@ const VanityFAQ = dynamic(
 
 export default function VanityPage() {
   return (
-    <PriceProvider>
-    <main className="min-h-screen xl:h-screen xl:overflow-hidden flex flex-col">
+    <main className="flex-1 flex flex-col xl:overflow-hidden">
       {/* Page header */}
       <header className="flex items-center pt-4 px-4 mb-2 mx-auto w-full max-w-3xl">
         <div className="flex items-center gap-2.5">
@@ -55,23 +52,8 @@ export default function VanityPage() {
       {/* Content */}
       <div className="container mx-auto px-4 pb-4 xl:pb-2 max-w-3xl flex flex-col flex-1">
         <VanityGenerator />
-
-        {/* Footer — exact copy of SolReclaimer footer */}
-        <footer className="mt-auto pt-3 border-t border-[#222228]">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            {/* BTC price — left (desktop only) */}
-            <div className="hidden xl:block"><BtcPrice /></div>
-
-            {/* Center links with social tracking */}
-            <FooterSocialLinks />
-
-            {/* SOL price — right (desktop only) */}
-            <div className="hidden xl:block"><SolPrice /></div>
-          </div>
-        </footer>
       </div>
 
     </main>
-    </PriceProvider>
   );
 }

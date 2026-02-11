@@ -1,17 +1,21 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect, createContext, useContext } from 'react';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
+import { FooterSocialLinks } from '@/components/Heartbeat';
 
 const Sidebar = dynamic(() => import('./Sidebar').then(m => ({ default: m.Sidebar })), { ssr: false });
 const BottomNav = dynamic(() => import('./BottomNav').then(m => ({ default: m.BottomNav })), { ssr: false });
 
 const SIDEBAR_KEY = 'sidebar-open';
 
+const SidebarContext = createContext(true);
+export const useSidebarOpen = () => useContext(SidebarContext);
+
 export const ToolLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
-  const isReclaimer = pathname === '/reclaim';
 
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -26,7 +30,9 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
   const toggle = () => setSidebarOpen(prev => !prev);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PriceProvider>
+    <SidebarContext.Provider value={sidebarOpen}>
+    <div className="min-h-screen xl:h-screen flex flex-col xl:overflow-hidden">
       {/* Desktop sidebar — hidden below xl */}
       <div className="hidden xl:block">
         <Sidebar activePath={pathname} isOpen={sidebarOpen} onToggle={toggle} />
@@ -46,14 +52,23 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
         </svg>
       </button>
 
-      {/* Main content area — offset by sidebar width on desktop (except reclaimer which self-centers) */}
+      {/* Main content area — offset by sidebar width on desktop */}
       <div
-        className={`flex-1 flex flex-col pb-20 xl:pb-0 ${
-          !isReclaimer && sidebarOpen ? 'xl:ml-[72px]' : ''
+        className={`flex-1 flex flex-col pb-20 xl:pb-0 xl:min-h-0 ${
+          sidebarOpen ? 'xl:ml-[72px]' : 'xl:ml-0'
         }`}
         style={{ transition: 'margin-left 350ms cubic-bezier(0.16, 1, 0.3, 1)' }}
       >
         {children}
+
+        {/* Footer */}
+        <footer className="mt-auto pt-3 pb-3 border-t border-[#222228]">
+          <div className="px-6 lg:px-10 flex items-center justify-between text-[11px] text-gray-500">
+            <BtcPrice />
+            <FooterSocialLinks />
+            <SolPrice />
+          </div>
+        </footer>
       </div>
 
       {/* Mobile bottom nav — hidden at xl+ */}
@@ -61,5 +76,7 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
         <BottomNav activePath={pathname} />
       </div>
     </div>
+    </SidebarContext.Provider>
+    </PriceProvider>
   );
 };
