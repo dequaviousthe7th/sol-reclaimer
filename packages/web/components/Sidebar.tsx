@@ -19,11 +19,16 @@ export const TOOLS = [
 
 interface SidebarProps {
   activePath: string;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-export const Sidebar = ({ activePath }: SidebarProps) => {
+export const Sidebar = ({ activePath, isOpen, onToggle }: SidebarProps) => {
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[72px] bg-[#0a0a0b] border-r border-[#222228] z-50 flex flex-col">
+    <aside
+      className={`fixed left-0 top-0 bottom-0 w-[72px] bg-[#0a0a0b] border-r border-[#222228] z-50 flex flex-col ${isOpen ? 'translate-x-0 shadow-[4px_0_24px_rgba(0,0,0,0.4)]' : '-translate-x-full shadow-none'}`}
+      style={{ transition: 'transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms cubic-bezier(0.16, 1, 0.3, 1)' }}
+    >
       {/* Logo */}
       <Link href="/" className="flex items-center justify-center h-16 border-b border-[#222228] hover:opacity-90 transition-opacity">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
@@ -59,6 +64,17 @@ export const Sidebar = ({ activePath }: SidebarProps) => {
           );
         })}
       </nav>
+
+      {/* Collapse button */}
+      <button
+        onClick={onToggle}
+        className="group flex items-center justify-center h-12 border-t border-[#222228] text-gray-500 hover:text-solana-purple hover:bg-solana-purple/5 transition-all duration-200"
+        title="Collapse sidebar"
+      >
+        <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        </svg>
+      </button>
     </aside>
   );
 };

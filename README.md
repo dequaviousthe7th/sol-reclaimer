@@ -47,7 +47,7 @@ Visit **[soltools.net](https://soltools.net)** to browse all tools.
 ### SOL Reclaimer
 
 <p align="center">
-  <img src="docs/preview-reclaim.png" alt="SOL Reclaimer" width="800"/>
+  <img src="docs/preview.png" alt="SOL Reclaimer" width="800"/>
 </p>
 
 1. Go to [soltools.net/reclaim](https://soltools.net/reclaim)
