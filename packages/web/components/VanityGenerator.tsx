@@ -144,7 +144,7 @@ export const VanityGenerator: FC = () => {
   const totalActiveLen = activePrefixLen + activeSuffixLen;
 
   return (
-    <div className="flex-1 flex flex-col justify-center py-6">
+    <div className="flex-1 flex flex-col justify-center py-3">
       {/* Main Card */}
       <div className="card p-6">
         {/* Input Section */}
