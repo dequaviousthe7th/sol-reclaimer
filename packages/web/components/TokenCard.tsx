@@ -35,12 +35,19 @@ function formatPrice(n: number): string {
 
 export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
   const [imgError, setImgError] = useState(false);
+  const [copied, setCopied] = useState(false);
   const changePositive = token.priceChange24h >= 0;
+
+  const copyCA = () => {
+    navigator.clipboard.writeText(token.address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
     <div className="card card-hover group flex flex-col overflow-hidden">
-      {/* Orange gradient accent bar */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-orange-500 to-yellow-400 opacity-60 group-hover:opacity-100 transition-opacity" />
+      {/* Gradient accent bar */}
+      <div className="h-[2px] w-full bg-gradient-to-r from-solana-purple to-solana-green opacity-60 group-hover:opacity-100 transition-opacity" />
 
       <div className="p-4 flex flex-col flex-1">
         {/* Top row: image + name + price */}
@@ -55,7 +62,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
                 onError={() => setImgError(true)}
               />
             ) : (
-              <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gradient-to-br from-orange-500/30 to-yellow-400/30 flex items-center justify-center text-sm font-bold text-orange-400">
+              <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gradient-to-br from-solana-purple/30 to-solana-green/30 flex items-center justify-center text-sm font-bold text-solana-purple">
                 {token.symbol.slice(0, 2)}
               </div>
             )}
@@ -89,7 +96,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
             href={token.pumpFunUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-2 py-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-[10px] text-gray-400 hover:text-orange-400 hover:border-orange-500/30 transition-colors"
+            className="px-2 py-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-[10px] text-gray-400 hover:text-solana-purple hover:border-solana-purple/30 transition-colors"
           >
             pump.fun
           </a>
@@ -98,7 +105,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
               href={token.pairUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-2 py-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-[10px] text-gray-400 hover:text-orange-400 hover:border-orange-500/30 transition-colors"
+              className="px-2 py-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-[10px] text-gray-400 hover:text-solana-purple hover:border-solana-purple/30 transition-colors"
             >
               DexScreener
             </a>
@@ -108,7 +115,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
               href={token.twitterUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-orange-400 hover:border-orange-500/30 transition-colors"
+              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-solana-purple hover:border-solana-purple/30 transition-colors"
               title="X / Twitter"
             >
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -121,7 +128,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
               href={token.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-orange-400 hover:border-orange-500/30 transition-colors"
+              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-solana-purple hover:border-solana-purple/30 transition-colors"
               title="Website"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +141,7 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
               href={token.telegramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-orange-400 hover:border-orange-500/30 transition-colors"
+              className="p-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-gray-400 hover:text-solana-purple hover:border-solana-purple/30 transition-colors"
               title="Telegram"
             >
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -142,6 +149,27 @@ export const TokenCard: FC<{ token: TokenCardData }> = ({ token }) => {
               </svg>
             </a>
           )}
+          <button
+            onClick={copyCA}
+            className="ml-auto px-2 py-1 rounded-lg bg-[#0a0a0b] border border-[#222228] text-[10px] text-gray-400 hover:text-solana-green hover:border-solana-green/30 transition-colors flex items-center gap-1"
+            title={`Copy CA: ${token.address}`}
+          >
+            {copied ? (
+              <>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Copied
+              </>
+            ) : (
+              <>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                CA
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
