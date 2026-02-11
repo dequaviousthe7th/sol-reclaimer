@@ -11,6 +11,9 @@
   --border-color: #222228;
 }
 
+html {
+  font-size: 17.6px; /* 16px × 1.1 — scales all rem-based Tailwind utilities by 10% */
+}
 
 * {
   box-sizing: border-box;
