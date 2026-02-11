@@ -2,6 +2,7 @@
   <img src="https://img.shields.io/badge/Solana-9945FF?style=for-the-badge&logo=solana&logoColor=white" alt="Solana"/>
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
   <img src="https://img.shields.io/badge/Rust-DEA584?style=for-the-badge&logo=rust&logoColor=black" alt="Rust"/>
 </p>
 
@@ -15,6 +16,11 @@
   <img src="https://img.shields.io/badge/Version-1.3.0-9945FF.svg" alt="Version 1.3.0"/>
   <img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary"/>
   <img src="https://img.shields.io/badge/Fees-0%25-14F195.svg" alt="Zero Fees"/>
+</p>
+
+<!-- Main hub preview -->
+<p align="center">
+  <img src="docs/preview-hub.png" alt="SolTools Hub" width="800"/>
 </p>
 
 ---
@@ -40,6 +46,10 @@ Visit **[soltools.net](https://soltools.net)** to browse all tools.
 
 ### SOL Reclaimer
 
+<p align="center">
+  <img src="docs/preview-reclaim.png" alt="SOL Reclaimer" width="800"/>
+</p>
+
 1. Go to [soltools.net/reclaim](https://soltools.net/reclaim)
 2. Connect your Solana wallet
 3. Scan for empty token accounts
@@ -47,6 +57,10 @@ Visit **[soltools.net](https://soltools.net)** to browse all tools.
 5. Reclaim your SOL
 
 ### Vanity Generator
+
+<p align="center">
+  <img src="docs/preview-vanity.png" alt="Vanity Generator" width="800"/>
+</p>
 
 1. Go to [soltools.net/vanity](https://soltools.net/vanity)
 2. Enter a prefix or suffix
