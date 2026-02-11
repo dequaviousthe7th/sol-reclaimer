@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { LazyProviders } from '@/components/LazyProviders';
+import { ToolLayout } from '@/components/ToolLayout';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -15,9 +16,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://solreclaimer.net'),
-  title: 'SolReclaimer - Reclaim Your Locked SOL',
-  description: 'Close empty Solana token accounts and reclaim your SOL. Zero fees, open source.',
-  keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolReclaimer'],
+  title: 'SolReclaimer - Solana Tools',
+  description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
+  keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolReclaimer', 'vanity wallet'],
   authors: [{ name: 'Dequavious' }],
   icons: {
     icon: [
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   openGraph: {
     title: 'SolReclaimer',
-    description: 'Close empty Solana token accounts and reclaim your SOL. Zero fees.',
+    description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
     type: 'website',
     images: [{ url: '/icon-512.png', width: 512, height: 512 }],
   },
@@ -54,7 +55,9 @@ export default function RootLayout({
       </head>
       <body className={spaceGrotesk.className}>
         <LazyProviders>
-          {children}
+          <ToolLayout>
+            {children}
+          </ToolLayout>
         </LazyProviders>
       </body>
     </html>

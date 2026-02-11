@@ -1,0 +1,1 @@
+/home/dequavious/sol-rent-reclaimer/packages/web/wasm/vanity-wasm/target/wasm32-unknown-unknown/release/libvanity_wasm.rlib: /home/dequavious/sol-rent-reclaimer/packages/web/wasm/vanity-wasm/src/lib.rs

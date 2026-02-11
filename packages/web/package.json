@@ -5,6 +5,8 @@
   "author": "Dequavious",
   "scripts": {
     "dev": "next dev -p 5000",
+    "build:wasm": "cd wasm/vanity-wasm && bash build.sh",
+    "prebuild": "pnpm build:wasm",
     "build": "next build",
     "start": "next start -p 5000",
     "lint": "next lint"
