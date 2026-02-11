@@ -203,27 +203,6 @@ body {
   box-shadow: none;
 }
 
-/* Shimmer animation */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.08),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: shimmer 6s infinite;
-}
-
 /* Pulse animation */
 @keyframes pulse-glow {
   0%, 100% {
@@ -289,6 +268,38 @@ body {
 }
 
 .group\/activity:hover .activity-scroll::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Hover-only scrollbar — hides scrollbar until container is hovered */
+.scroll-fade {
+  scrollbar-width: none;
+}
+
+.scroll-fade::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-fade::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-fade::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.scroll-fade:hover {
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+.scroll-fade:hover::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+.scroll-fade:hover::-webkit-scrollbar-thumb:hover {
   background: #444;
 }
 

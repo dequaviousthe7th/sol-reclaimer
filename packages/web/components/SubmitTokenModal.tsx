@@ -102,7 +102,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
       onClick={onClose}
     >
       <div
-        className="card p-6 sm:p-8 max-w-lg w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto modal-enter"
+        className="card p-6 sm:p-8 max-w-lg w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto scroll-fade modal-enter"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -142,7 +142,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
                 value={mintAddress}
                 onChange={(e) => setMintAddress(e.target.value.trim())}
                 placeholder="e.g. 6CRayr4GnspC1GUDLs693oPk7AoD..."
-                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-orange-500/50 focus:outline-none transition-colors"
+                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-solana-purple/50 focus:outline-none transition-colors"
               />
             </div>
 
@@ -155,7 +155,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="e.g. CashApp"
                 maxLength={50}
-                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-orange-500/50 focus:outline-none transition-colors"
+                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-solana-purple/50 focus:outline-none transition-colors"
               />
             </div>
 
@@ -167,7 +167,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
                 placeholder="@handle"
-                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-orange-500/50 focus:outline-none transition-colors"
+                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-solana-purple/50 focus:outline-none transition-colors"
               />
             </div>
 
@@ -179,7 +179,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-orange-500/50 focus:outline-none transition-colors"
+                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-solana-purple/50 focus:outline-none transition-colors"
               />
             </div>
 
@@ -192,7 +192,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
                 placeholder="Brief description of the project..."
                 maxLength={200}
                 rows={3}
-                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-orange-500/50 focus:outline-none transition-colors resize-none"
+                className="w-full bg-[#0a0a0b] border border-[#222228] rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-solana-purple/50 focus:outline-none transition-colors resize-none"
               />
               <p className="text-xs text-gray-600 mt-1">{description.length}/200</p>
             </div>
@@ -204,7 +204,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-full bg-gradient-to-r from-orange-500 to-yellow-400 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:opacity-90 hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full bg-gradient-to-r from-solana-purple to-solana-green text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:opacity-90 hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {submitting ? 'Submitting...' : 'Submit Token'}
             </button>

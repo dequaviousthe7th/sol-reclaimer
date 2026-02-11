@@ -334,7 +334,7 @@ export const RentReclaimer: FC<RentReclaimerProps> = ({ onBack }) => {
             </p>
 
             {closeResult.signatures.length > 0 && (
-              <div className="bg-[#0d0d0f] border border-[#222228] rounded-xl p-4 text-left max-h-48 overflow-y-auto">
+              <div className="bg-[#0d0d0f] border border-[#222228] rounded-xl p-4 text-left max-h-48 overflow-y-auto scroll-fade">
                 <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Transactions</p>
                 {closeResult.signatures.map((sig, i) => (
                   <a

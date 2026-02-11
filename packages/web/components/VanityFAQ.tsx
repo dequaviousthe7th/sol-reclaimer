@@ -167,7 +167,7 @@ export const VanityFAQ: FC = () => {
         <LockIcon locked={locked} />
       </button>
 
-      <div className="card p-6 h-[500px] overflow-y-auto">
+      <div className="card p-6 h-[500px] overflow-y-auto scroll-fade">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center text-solana-purple">

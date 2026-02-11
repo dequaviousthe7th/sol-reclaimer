@@ -34,7 +34,7 @@ export const InfoModal: FC<InfoModalProps> = ({ open, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="card p-6 sm:p-8 max-w-lg w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto modal-enter"
+        className="card p-6 sm:p-8 max-w-lg w-[calc(100%-2rem)] max-h-[85vh] overflow-y-auto scroll-fade modal-enter"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
