@@ -5,11 +5,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { MobileWalletPicker } from './MobileWalletPicker';
-
-function isMobileBrowser(): boolean {
-  if (typeof window === 'undefined') return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
+import { isMobileBrowser } from '@/lib/utils';
 
 interface WalletButtonInnerProps {
   autoOpen?: boolean;

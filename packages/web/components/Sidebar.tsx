@@ -77,7 +77,7 @@ export const Sidebar = ({ activePath, isOpen, onToggle }: SidebarProps) => {
       {/* Collapse button */}
       <button
         onClick={onToggle}
-        className="group flex items-center justify-center h-12 border-t border-[#222228] text-gray-500 hover:text-solana-purple hover:bg-solana-purple/5 transition-all duration-200"
+        className="group flex items-center justify-center py-3 border-t border-[#222228] text-gray-500 hover:text-solana-purple hover:bg-solana-purple/5 transition-all duration-200"
         title="Collapse sidebar"
       >
         <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@ export const Sidebar = ({ activePath, isOpen, onToggle }: SidebarProps) => {
   );
 };
 
-function ToolIcon({ id }: { id: string }) {
+export function ToolIcon({ id }: { id: string }) {
   switch (id) {
     case 'reclaim':
       return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { FC, useState, useEffect, useCallback } from 'react';
+import { truncateWallet, timeAgo } from '@/lib/utils';
 
 interface Stats {
   totalSolReclaimed: number;
@@ -13,22 +14,6 @@ interface RecentReclaim {
   solReclaimed: number;
   accountsClosed: number;
   timestamp: number;
-}
-
-function truncateWallet(address: string): string {
-  if (address.length <= 8) return address;
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}
-
-function timeAgo(timestamp: number): string {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
 }
 
 export const MobileStats: FC = () => {

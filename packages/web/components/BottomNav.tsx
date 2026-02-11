@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TOOLS } from './Sidebar';
+import { TOOLS, ToolIcon } from './Sidebar';
 
 interface BottomNavProps {
   activePath: string;
@@ -32,33 +32,3 @@ export const BottomNav = ({ activePath }: BottomNavProps) => {
     </nav>
   );
 };
-
-function ToolIcon({ id }: { id: string }) {
-  switch (id) {
-    case 'reclaim':
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      );
-    case 'vanity':
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-        </svg>
-      );
-    case 'hackathon':
-      return (
-        <svg className="w-5 h-3" viewBox="0 0 20 12" fill="none">
-          <rect x="0.5" y="0.5" width="19" height="11" rx="5.5" fill="white" stroke="currentColor" strokeWidth="1" />
-          <path d="M10 0.5H14.5C17.2614 0.5 19.5 2.73858 19.5 5.5V6.5C19.5 9.26142 17.2614 11.5 14.5 11.5H10V0.5Z" fill="#82e24c" stroke="currentColor" strokeWidth="1" />
-        </svg>
-      );
-    default:
-      return (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      );
-  }
-}

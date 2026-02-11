@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { useProvidersLoaded } from './LazyProviders';
 import { MobileWalletPicker } from './MobileWalletPicker';
+import { isMobileBrowser } from '@/lib/utils';
 
 // Inner component that uses wallet hooks (only rendered when providers are loaded)
 const WalletButtonInner = dynamic(
@@ -17,11 +18,6 @@ const WalletButtonInner = dynamic(
     ),
   }
 );
-
-function isMobileBrowser(): boolean {
-  if (typeof window === 'undefined') return false;
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
 
 interface WalletButtonProps {
   autoOpen?: boolean;
