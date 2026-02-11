@@ -16,6 +16,7 @@ export const useSidebarOpen = () => useContext(SidebarContext);
 
 export const ToolLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
+  const isAdmin = pathname === '/d/sr-ctrl';
 
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -28,6 +29,15 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
   }, [sidebarOpen]);
 
   const toggle = () => setSidebarOpen(prev => !prev);
+
+  // Admin page gets no sidebar/footer/bottom-nav
+  if (isAdmin) {
+    return (
+      <SidebarContext.Provider value={false}>
+        {children}
+      </SidebarContext.Provider>
+    );
+  }
 
   return (
     <PriceProvider>

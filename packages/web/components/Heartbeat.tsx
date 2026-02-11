@@ -72,7 +72,7 @@ export const FooterSocialLinks = () => {
         </svg>
       </a>
       <a
-        href="https://x.com/SolanaReclaimer"
+        href="https://x.com/SolToolsApp"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-1 hover:text-solana-purple transition-colors"

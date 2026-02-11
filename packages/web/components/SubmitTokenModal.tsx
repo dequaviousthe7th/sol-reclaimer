@@ -17,6 +17,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
   const [twitter, setTwitter] = useState('');
   const [website, setWebsite] = useState('');
   const [description, setDescription] = useState('');
+  const [relationship, setRelationship] = useState<'creator' | 'finder'>('creator');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -73,6 +74,7 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
         body: JSON.stringify({
           mintAddress,
           projectName,
+          relationship,
           twitter: twitter || undefined,
           website: website || undefined,
           description: description || undefined,
@@ -133,6 +135,35 @@ export const SubmitTokenModal: FC<SubmitTokenModalProps> = ({ open, onClose }) =
             <p className="text-sm text-gray-400 mb-4">
               Submit a PumpFun hackathon token for review. Approved tokens will appear in the screener.
             </p>
+
+            {/* Relationship */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1.5">Your Relationship *</label>
+              <div className="flex rounded-xl border border-[#222228] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setRelationship('creator')}
+                  className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+                    relationship === 'creator'
+                      ? 'bg-solana-green/15 text-solana-green border-r border-[#222228]'
+                      : 'bg-[#0a0a0b] text-gray-500 hover:text-gray-300 border-r border-[#222228]'
+                  }`}
+                >
+                  I created this token
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRelationship('finder')}
+                  className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+                    relationship === 'finder'
+                      ? 'bg-solana-purple/15 text-solana-purple'
+                      : 'bg-[#0a0a0b] text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  I found this token
+                </button>
+              </div>
+            </div>
 
             {/* Mint address */}
             <div>
