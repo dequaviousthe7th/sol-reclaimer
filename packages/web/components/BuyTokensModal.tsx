@@ -103,7 +103,13 @@ export const BuyTokensModal: FC<BuyTokensModalProps> = ({ open, onClose, onPurch
 
   const handlePurchase = async (tier: typeof TIERS[0]) => {
     if (!publicKey || !sendTransaction || !TREASURY || !WORKER_URL) {
-      setError('Wallet not connected or service unavailable');
+      const missing = [
+        !publicKey && 'wallet',
+        !sendTransaction && 'adapter',
+        !TREASURY && 'treasury',
+        !WORKER_URL && 'api',
+      ].filter(Boolean);
+      setError(`Service unavailable (${missing.join(', ')}). Please reconnect wallet or try again.`);
       setState('error');
       return;
     }
