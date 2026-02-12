@@ -78,8 +78,8 @@ export default function HubPage() {
       <section className="pt-14 sm:pt-20 pb-8 sm:pb-12 text-center px-4 relative">
         {/* Floating animated logo */}
         <div className="flex justify-center mb-5">
-          <div className="float pulse-glow w-[72px] h-[72px] rounded-2xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="float pulse-glow w-14 sm:w-[72px] h-14 sm:h-[72px] rounded-2xl bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
+            <svg className="w-8 sm:w-10 h-8 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>

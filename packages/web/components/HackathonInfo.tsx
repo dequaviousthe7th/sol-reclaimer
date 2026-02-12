@@ -117,7 +117,7 @@ export const HackathonInfo: FC = () => {
       style={
         hasCustomPosition
           ? { left: position.x, top: position.y, ...(isUnlocked ? { willChange: 'transform' } : {}) }
-          : { right: `calc((100vw - ${sidebarWidth}px - 64rem) / 4 - 140px)`, transition: 'right 350ms cubic-bezier(0.16, 1, 0.3, 1)' }
+          : { right: `calc((100vw - ${sidebarWidth}px - 56rem) / 4 - 140px)`, transition: 'right 350ms cubic-bezier(0.16, 1, 0.3, 1)' }
       }
       onMouseDown={handleMouseDown}
     >

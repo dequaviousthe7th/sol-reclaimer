@@ -202,19 +202,19 @@ export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, onToke
   return (
     <div className="flex-1 flex flex-col justify-center py-3">
       {/* Main Card */}
-      <div className="card p-6">
+      <div className="card p-4 sm:p-6">
         {/* Input Section */}
         {(status === 'idle' || status === 'stopped') && (
           <>
             <div className="flex items-start justify-between mb-5">
               <div>
-                <h2 className="text-xl font-bold text-white mb-1">Generate Vanity Address</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-1">Generate Vanity Address</h2>
                 <p className="text-sm text-gray-500">
                   Create a Solana address starting or ending with your chosen letters
                 </p>
               </div>
               {/* Security badge */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-solana-green/10 border border-solana-green/20 flex-shrink-0 ml-4">
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-solana-green/10 border border-solana-green/20 flex-shrink-0 ml-4">
                 <svg className="w-4 h-4 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
@@ -228,7 +228,7 @@ export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, onToke
                 <button
                   key={m}
                   onClick={() => setMode(m)}
-                  className={`px-5 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  className={`px-3 sm:px-5 py-2 rounded-xl text-sm font-medium transition-colors ${
                     mode === m
                       ? 'bg-solana-purple/20 text-solana-purple border border-solana-purple/30'
                       : 'bg-[#16161a] text-gray-400 border border-[#222228] hover:border-gray-600'
@@ -241,7 +241,7 @@ export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, onToke
 
             {/* Input Fields — side by side in "both" mode */}
             {mode === 'both' ? (
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
                 <div>
                   <label className="text-xs text-gray-500 uppercase tracking-wide mb-1.5 block">Prefix (1-4)</label>
                   <input
@@ -375,15 +375,15 @@ export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, onToke
 
             {/* Live Stats */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="stat-card !p-4">
+              <div className="stat-card !p-3 sm:!p-4">
                 <p className="text-xs text-gray-500 uppercase mb-1">Attempts</p>
                 <p className="text-lg font-bold text-white font-mono">{attempts.toLocaleString()}</p>
               </div>
-              <div className="stat-card !p-4">
+              <div className="stat-card !p-3 sm:!p-4">
                 <p className="text-xs text-gray-500 uppercase mb-1">Rate</p>
                 <p className="text-lg font-bold text-solana-green font-mono">{rate.toLocaleString()}/s</p>
               </div>
-              <div className="stat-card !p-4">
+              <div className="stat-card !p-3 sm:!p-4">
                 <p className="text-xs text-gray-500 uppercase mb-1">Elapsed</p>
                 <p className="text-lg font-bold text-white font-mono">{(elapsed / 1000).toFixed(1)}s</p>
               </div>
@@ -453,7 +453,7 @@ export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, onToke
           </div>
 
           {/* How it works cards */}
-          <div className="grid grid-cols-3 gap-3 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
             <div className="card card-hover p-4 text-center">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center mx-auto mb-2.5 text-solana-purple">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
