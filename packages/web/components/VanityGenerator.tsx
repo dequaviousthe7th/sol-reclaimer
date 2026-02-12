@@ -1,6 +1,7 @@
 'use client';
 
 import { FC, useState, useCallback, useRef, useEffect } from 'react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { validatePrefix, validateSuffix } from '@/lib/vanity/generator';
 import { WorkerManager } from '@/lib/vanity/worker-manager';
 import { VanityResult } from './VanityResult';
@@ -15,7 +16,15 @@ interface FoundResult {
   elapsedMs: number;
 }
 
-export const VanityGenerator: FC = () => {
+interface VanityGeneratorProps {
+  onNeedTokens?: () => void;
+  tokenBalance?: number | null;
+}
+
+const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || '';
+
+export const VanityGenerator: FC<VanityGeneratorProps> = ({ onNeedTokens, tokenBalance }) => {
+  const { publicKey } = useWallet();
   const [status, setStatus] = useState<Status>('idle');
   const [mode, setMode] = useState<Mode>('prefix');
   const [prefix, setPrefix] = useState('');
@@ -23,6 +32,7 @@ export const VanityGenerator: FC = () => {
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FoundResult | null>(null);
+  const [deducting, setDeducting] = useState(false);
 
   const [attempts, setAttempts] = useState(0);
   const [rate, setRate] = useState(0);
@@ -39,7 +49,17 @@ export const VanityGenerator: FC = () => {
     };
   }, []);
 
-  const handleStart = useCallback(() => {
+  // Warn before unload while searching (token already consumed)
+  useEffect(() => {
+    if (status !== 'searching') return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [status]);
+
+  const handleStart = useCallback(async () => {
     setError(null);
     setResult(null);
 
@@ -57,6 +77,39 @@ export const VanityGenerator: FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid pattern');
       return;
+    }
+
+    // Token gate: must be connected and have tokens
+    if (!publicKey) {
+      setError('Connect your wallet to generate vanity addresses');
+      return;
+    }
+
+    if (WORKER_URL) {
+      setDeducting(true);
+      try {
+        const res = await fetch(`${WORKER_URL}/api/vanity/deduct`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ wallet: publicKey.toBase58() }),
+        });
+
+        if (res.status === 403) {
+          onNeedTokens?.();
+          return;
+        }
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: 'Token check failed' }));
+          setError((data as { error?: string }).error || 'Token check failed');
+          return;
+        }
+      } catch {
+        setError('Network error checking tokens');
+        return;
+      } finally {
+        setDeducting(false);
+      }
     }
 
     setStatus('searching');
@@ -96,7 +149,7 @@ export const VanityGenerator: FC = () => {
 
     managerRef.current = manager;
     manager.start();
-  }, [prefix, suffix, caseSensitive, mode]);
+  }, [prefix, suffix, caseSensitive, mode, publicKey, onNeedTokens]);
 
   const handleStop = useCallback(() => {
     managerRef.current?.stop();
@@ -265,14 +318,36 @@ export const VanityGenerator: FC = () => {
               </div>
             )}
 
+            {/* Mobile token balance (2xl:hidden since desktop has VanityTokenCard) */}
+            {publicKey && tokenBalance !== null && tokenBalance !== undefined && (
+              <div className="2xl:hidden flex items-center justify-between mb-4 px-3 py-2.5 rounded-xl bg-[#111113] border border-[#222228]">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-solana-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm text-gray-400">Tokens: <span className="text-solana-green font-bold">{tokenBalance}</span></span>
+                </div>
+                <button
+                  onClick={onNeedTokens}
+                  className="text-xs text-solana-purple hover:text-solana-purple/80 font-medium transition-colors"
+                >
+                  Buy More
+                </button>
+              </div>
+            )}
+
             {/* Generate Button */}
-            <button onClick={handleStart} className="w-full btn-primary py-3.5 text-base font-semibold">
-              {status === 'stopped' ? 'Try Again' : 'Generate'}
+            <button
+              onClick={handleStart}
+              disabled={deducting}
+              className="w-full btn-primary py-3.5 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {deducting ? 'Checking tokens...' : status === 'stopped' ? 'Try Again' : 'Generate'}
             </button>
 
-            {/* Base58 note */}
+            {/* Token cost note */}
             <p className="text-xs text-gray-600 mt-3 text-center">
-              Base58 only: A-Z, a-z, 1-9 (no 0, O, I, l)
+              Costs 1 token per search &middot; Base58 only: A-Z, a-z, 1-9 (no 0, O, I, l)
             </p>
           </>
         )}
@@ -318,6 +393,14 @@ export const VanityGenerator: FC = () => {
             >
               Stop
             </button>
+
+            {/* Don't refresh warning */}
+            <div className="mt-5 flex items-center justify-center gap-2 text-yellow-400/80">
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p className="text-xs">Don&apos;t refresh or close &mdash; your token has been used</p>
+            </div>
           </div>
         )}
 
