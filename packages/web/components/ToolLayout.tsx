@@ -7,7 +7,6 @@ import { PriceProvider, BtcPrice, SolPrice } from '@/components/PriceTicker';
 import { FooterSocialLinks } from '@/components/Heartbeat';
 
 const Sidebar = dynamic(() => import('./Sidebar').then(m => ({ default: m.Sidebar })), { ssr: false });
-const BottomNav = dynamic(() => import('./BottomNav').then(m => ({ default: m.BottomNav })), { ssr: false });
 
 const SIDEBAR_KEY = 'sidebar-open';
 
@@ -64,7 +63,7 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Main content area — offset by sidebar width on desktop */}
       <div
-        className={`flex-1 flex flex-col pb-20 xl:pb-0 xl:min-h-0 ${
+        className={`flex-1 flex flex-col xl:min-h-0 ${
           sidebarOpen ? 'xl:ml-[72px]' : 'xl:ml-0'
         }`}
         style={{ transition: 'margin-left 350ms cubic-bezier(0.16, 1, 0.3, 1)' }}
@@ -81,10 +80,6 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
         </footer>
       </div>
 
-      {/* Mobile bottom nav — hidden at xl+ */}
-      <div className="xl:hidden">
-        <BottomNav activePath={pathname} />
-      </div>
     </div>
     </SidebarContext.Provider>
     </PriceProvider>

@@ -19,7 +19,11 @@ const LockIcon = ({ locked }: { locked: boolean }) => (
   </svg>
 );
 
-export const HackathonInfo: FC = () => {
+interface HackathonInfoProps {
+  mobile?: boolean;
+}
+
+export const HackathonInfo: FC<HackathonInfoProps> = ({ mobile }) => {
   const sidebarOpen = useSidebarOpen();
   const sidebarWidth = sidebarOpen ? 72 : 0;
   const [locked, setLocked] = useState(true);
@@ -105,6 +109,36 @@ export const HackathonInfo: FC = () => {
 
   const hasCustomPosition = position !== null;
   const isUnlocked = !locked;
+
+  if (mobile) {
+    return (
+      <div className="card overflow-hidden">
+        <div className="p-4 pb-3">
+          <div className="flex items-center gap-2.5">
+            <img src="/pumpfun-avatar.jpg" alt="pump.fun" className="w-10 h-10 rounded-full flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-bold text-white">pump.fun</span>
+                <svg className="w-4 h-4 text-[#1d9bf0] flex-shrink-0" viewBox="0 0 22 22" fill="currentColor">
+                  <path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.855-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.69-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.636.433 1.221.878 1.69.47.446 1.055.752 1.69.883.635.13 1.294.083 1.902-.143.272.587.706 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.225 1.261.272 1.894.141.634-.131 1.22-.434 1.69-.88.445-.47.749-1.055.88-1.69.13-.635.083-1.293-.14-1.898.587-.273 1.084-.706 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z" />
+                </svg>
+              </div>
+              <span className="text-xs text-gray-500">@pumpdotfun</span>
+            </div>
+          </div>
+        </div>
+        <div className="px-4 pb-3">
+          <p className="text-[13px] text-gray-200 leading-[1.4]">Introducing the Build in Public Hackathon</p>
+          <p className="text-[13px] text-gray-200 leading-[1.4] mt-1.5">a $3M fund backing 12 teams with $250K each at a $10M valuation</p>
+          <p className="text-[13px] text-gray-400 leading-[1.4] mt-1.5">Launch a token on pump.fun, keep 10% supply, and build in public. Winners selected by market traction.</p>
+        </div>
+        <div className="px-4 pb-3 flex items-center justify-between">
+          <span className="text-xs text-gray-500">4:36 PM · Jan 19, 2026</span>
+          <a href="https://x.com/pumpdotfun/status/2013386533626163589" target="_blank" rel="noopener noreferrer" className="text-xs text-solana-purple hover:text-solana-purple/80 transition-colors font-medium">View on X</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

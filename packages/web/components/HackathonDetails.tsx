@@ -58,7 +58,11 @@ const INFO_ITEMS = [
   },
 ];
 
-export const HackathonDetails: FC = () => {
+interface HackathonDetailsProps {
+  mobile?: boolean;
+}
+
+export const HackathonDetails: FC<HackathonDetailsProps> = ({ mobile }) => {
   const sidebarOpen = useSidebarOpen();
   const sidebarOffset = sidebarOpen ? 36 : 0;
   const [locked, setLocked] = useState(true);
@@ -144,6 +148,47 @@ export const HackathonDetails: FC = () => {
 
   const hasCustomPosition = position !== null;
   const isUnlocked = !locked;
+
+  if (mobile) {
+    return (
+      <div className="card p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center">
+            <svg className="w-4 h-2.5" viewBox="0 0 20 12" fill="none">
+              <rect x="0.5" y="0.5" width="19" height="11" rx="5.5" fill="white" stroke="#222228" strokeWidth="1" />
+              <path d="M10 0.5H14.5C17.2614 0.5 19.5 2.73858 19.5 5.5V6.5C19.5 9.26142 17.2614 11.5 14.5 11.5H10V0.5Z" fill="#82e24c" stroke="#222228" strokeWidth="1" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">Hackathon Details</h3>
+            <p className="text-[11px] text-gray-500">Build in Public</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {INFO_ITEMS.map((item, i) => (
+            <div key={i} className="flex items-start gap-2.5">
+              <div className="mt-0.5 flex-shrink-0">{item.icon}</div>
+              <div>
+                <p className="text-xs font-medium text-white">{item.title}</p>
+                <p className="text-[11px] text-gray-500 leading-relaxed mt-0.5">{item.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="border-t border-[#1a1a1f] my-4" />
+        <div className="space-y-2">
+          <a href="https://hackathon.pump.fun/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-gray-400 hover:text-solana-purple transition-colors">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            hackathon.pump.fun
+          </a>
+          <a href="https://x.com/pumpdotfun" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-gray-400 hover:text-solana-purple transition-colors">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+            @pumpdotfun
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

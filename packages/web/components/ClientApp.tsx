@@ -10,7 +10,7 @@ import { InfoModal } from './InfoModal';
 import { GlobalStats } from './GlobalStats';
 import { RecentActivity } from './RecentActivity';
 import { MobileStats } from './MobileStats';
-import { MobilePriceBar } from './PriceTicker';
+
 
 const LockIcon = ({ locked }: { locked: boolean }) => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -331,10 +331,6 @@ const HeroSection = ({ connected, onGetStarted, onOpenInfo }: { connected: boole
       />
     </div>
 
-    {/* Mobile Price Ticker — below trust badges */}
-    <div className="mt-4">
-      <MobilePriceBar />
-    </div>
   </section>
 );
 

@@ -51,7 +51,11 @@ const LockIcon = ({ locked }: { locked: boolean }) => (
   </svg>
 );
 
-export const VanityFAQ: FC = () => {
+interface VanityFAQProps {
+  mobile?: boolean;
+}
+
+export const VanityFAQ: FC<VanityFAQProps> = ({ mobile }) => {
   const sidebarOpen = useSidebarOpen();
   const sidebarOffset = sidebarOpen ? 36 : 0;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -138,6 +142,53 @@ export const VanityFAQ: FC = () => {
 
   const hasCustomPosition = position !== null;
   const isUnlocked = !locked;
+
+  if (mobile) {
+    return (
+      <div className="card p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-solana-purple/20 to-solana-green/20 flex items-center justify-center text-solana-purple">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">FAQ</h3>
+            <p className="text-xs text-gray-500">Common questions</p>
+          </div>
+        </div>
+        <div className="space-y-0.5">
+          {FAQ_ITEMS.map((item, i) => (
+            <div key={i} className="border-b border-[#1a1a1f] last:border-0">
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full flex items-center justify-between py-3 text-left group"
+              >
+                <span className={`text-sm font-medium pr-3 transition-colors ${
+                  openIndex === i ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'
+                }`}>
+                  {item.question}
+                </span>
+                <svg
+                  className={`w-4 h-4 flex-shrink-0 text-gray-600 transition-transform duration-200 ${
+                    openIndex === i ? 'rotate-180' : ''
+                  }`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {openIndex === i && (
+                <div className="pb-3.5 pr-5">
+                  <p className="text-xs text-gray-500 leading-relaxed">{item.answer}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

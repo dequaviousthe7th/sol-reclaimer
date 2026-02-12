@@ -83,6 +83,11 @@ export const VanityPageClient = () => {
         />
       </div>
 
+      {/* Mobile FAQ — below main content, hidden on desktop */}
+      <div className="xl:hidden px-4 pb-4 max-w-3xl mx-auto w-full">
+        <VanityFAQ mobile />
+      </div>
+
       {/* Buy Tokens Modal */}
       <BuyTokensModal
         open={modalOpen}
