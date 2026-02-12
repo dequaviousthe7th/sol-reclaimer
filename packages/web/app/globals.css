@@ -203,6 +203,27 @@ body {
   box-shadow: none;
 }
 
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s infinite;
+}
+
 /* Pulse animation */
 @keyframes pulse-glow {
   0%, 100% {

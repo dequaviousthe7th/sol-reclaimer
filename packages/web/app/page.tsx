@@ -145,6 +145,22 @@ export default function HubPage() {
         ))}
       </section>
 
+      {/* Coming soon teaser */}
+      <section className="px-4 max-w-4xl mx-auto w-full mt-4">
+        <div className="relative rounded-2xl border border-dashed border-[#222228] p-5 flex items-center gap-4 overflow-hidden">
+          <div className="shimmer absolute inset-0 pointer-events-none" />
+          <div className="w-11 h-11 rounded-xl bg-[#111113] flex items-center justify-center border border-[#222228] text-gray-600 flex-shrink-0">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs font-medium">More tools coming soon</p>
+            <p className="text-gray-600 text-[11px] mt-0.5">Token analytics, portfolio tracker, and more in the works.</p>
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }
