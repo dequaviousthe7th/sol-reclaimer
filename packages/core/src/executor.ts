@@ -342,10 +342,12 @@ export class TransactionExecutor {
   ): Promise<CloseWithALTResult> {
     const { batchSize, simulate = false, onPhase, onProgress } = options;
 
-    // Small account optimization: skip ALT for <= 5 accounts
-    if (accounts.length <= 5) {
+    // Skip ALT for moderate account counts — one sign prompt is better UX.
+    // Legacy transactions batch ~12 accounts each, all signed in one Phantom prompt.
+    // ALT only worthwhile for very large batches (50+).
+    if (accounts.length <= 50) {
       return this.closeWithLegacyFallback(
-        accounts, walletPublicKey, signAllTransactions, batchSize ?? 5, simulate, onPhase, onProgress
+        accounts, walletPublicKey, signAllTransactions, batchSize ?? 12, simulate, onPhase, onProgress
       );
     }
 
