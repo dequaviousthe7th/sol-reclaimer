@@ -27,6 +27,13 @@ const WalletButtonWithAutoOpen = ({ autoOpen }: WalletButtonProps) => {
   return <WalletButtonInner autoOpen={autoOpen} />;
 };
 
+/** Check if a Solana wallet is injected (i.e. we're in a wallet's in-app browser) */
+function hasInjectedWallet(): boolean {
+  if (typeof window === 'undefined') return false;
+  const w = window as unknown as Record<string, unknown>;
+  return !!(w.phantom || w.solana || w.solflare || w.okxwallet);
+}
+
 export const WalletButton = () => {
   const providersLoaded = useProvidersLoaded();
   const [pendingClick, setPendingClick] = useState(false);
@@ -39,9 +46,11 @@ export const WalletButton = () => {
 
   // Handle placeholder click - store intent to open modal
   const handlePlaceholderClick = useCallback(() => {
-    if (mobile) {
+    if (mobile && !hasInjectedWallet()) {
+      // Regular mobile browser — no wallet extension, show deep-link picker
       setPickerOpen(true);
     } else {
+      // Desktop or in-app browser — let WalletButtonInner handle it once providers load
       setPendingClick(true);
     }
   }, [mobile]);

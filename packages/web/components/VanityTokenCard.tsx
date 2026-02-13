@@ -33,7 +33,7 @@ const LockIcon = ({ locked }: { locked: boolean }) => (
 export const VanityTokenCard: FC<VanityTokenCardProps> = ({ refreshKey, onBuyTokens, mobile }) => {
   const sidebarOpen = useSidebarOpen();
   const sidebarOffset = sidebarOpen ? 36 : 0;
-  const { publicKey } = useWallet();
+  const { publicKey, wallets, select, connect, wallet, connected, connecting } = useWallet();
   const { setVisible } = useWalletModal();
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -147,6 +147,26 @@ export const VanityTokenCard: FC<VanityTokenCardProps> = ({ refreshKey, onBuyTok
   const isUnlocked = !locked;
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [pendingConnect, setPendingConnect] = useState(false);
+
+  // After select(), wallet changes — then we connect
+  useEffect(() => {
+    if (pendingConnect && wallet && !connected && !connecting) {
+      setPendingConnect(false);
+      connect().catch(() => {});
+    }
+  }, [pendingConnect, wallet, connected, connecting, connect]);
+
+  const handleMobileConnect = useCallback(() => {
+    if (wallets.length > 0) {
+      // In-app browser — wallet detected, connect directly
+      select(wallets[0].adapter.name);
+      setPendingConnect(true);
+    } else {
+      // Regular mobile browser — show deep-link picker
+      setPickerOpen(true);
+    }
+  }, [wallets, select]);
 
   if (mobile) {
     return (
@@ -191,10 +211,10 @@ export const VanityTokenCard: FC<VanityTokenCardProps> = ({ refreshKey, onBuyTok
               Connect your wallet to purchase tokens and start generating vanity addresses.
             </p>
             <button
-              onClick={() => setPickerOpen(true)}
+              onClick={handleMobileConnect}
               className="w-full btn-primary py-2.5 text-sm font-semibold"
             >
-              Connect Wallet
+              {connecting ? 'Connecting...' : 'Connect Wallet'}
             </button>
             <MobileWalletPicker open={pickerOpen} onClose={() => setPickerOpen(false)} />
           </>

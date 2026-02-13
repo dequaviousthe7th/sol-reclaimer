@@ -96,7 +96,7 @@ export const MobileWalletPicker: FC<MobileWalletPickerProps> = ({ open, onClose 
         </div>
 
         <p className="px-5 pb-4 text-sm text-gray-500">
-          Open SolReclaimer in your wallet app
+          Open SolTools in your wallet app
         </p>
 
         {/* Wallet list */}
