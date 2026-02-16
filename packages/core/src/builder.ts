@@ -191,7 +191,6 @@ export class TransactionBuilder {
 
   /**
    * Build close transactions as v0 VersionedTransaction referencing an ALT.
-   * Appends a deactivateLookupTable instruction to the last transaction.
    */
   async buildCloseTransactionsWithALT(
     accounts: TokenAccountInfo[],
@@ -216,16 +215,6 @@ export class TransactionBuilder {
         batches[i], destination, authority
       );
       instructions.push(...closeInstructions);
-
-      // Deactivate the ALT in the last transaction for cleanup
-      if (i === batches.length - 1) {
-        instructions.push(
-          AddressLookupTableProgram.deactivateLookupTable({
-            lookupTable: altAddress,
-            authority: authority,
-          })
-        );
-      }
 
       const messageV0 = new TransactionMessage({
         payerKey: payer,
