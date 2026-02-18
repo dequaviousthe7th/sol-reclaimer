@@ -15,6 +15,7 @@ interface TradingChartProps {
   color?: 'green' | 'red' | 'cyan';
   ranges?: TimeRange[];
   loading?: boolean;
+  priceFormatter?: (price: number) => string;
 }
 
 const COLOR_MAP = {
@@ -22,6 +23,18 @@ const COLOR_MAP = {
   red:   { line: '#ef4444', top: 'rgba(239, 68, 68, 0.25)', bottom: 'rgba(239, 68, 68, 0)' },
   cyan:  { line: '#06b6d4', top: 'rgba(6, 182, 212, 0.25)', bottom: 'rgba(6, 182, 212, 0)' },
 };
+
+function defaultFormatPrice(n: number): string {
+  if (n === 0) return '$0';
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(2)}B`;
+  if (abs >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (abs >= 1_000) return `$${(n / 1_000).toFixed(2)}K`;
+  if (abs >= 1) return `$${n.toFixed(2)}`;
+  if (abs >= 0.01) return `$${n.toFixed(4)}`;
+  if (abs >= 0.000001) return `$${n.toFixed(6)}`;
+  return `$${n.toExponential(2)}`;
+}
 
 export default function TradingChart({
   type,
@@ -31,6 +44,7 @@ export default function TradingChart({
   color = 'green',
   ranges,
   loading = false,
+  priceFormatter,
 }: TradingChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,6 +55,7 @@ export default function TradingChart({
   const [activeRange, setActiveRange] = useState<string>(ranges?.[ranges.length - 1]?.label || 'Max');
   const [isMobile, setIsMobile] = useState(false);
   const initRef = useRef(false);
+  const formatFn = priceFormatter || defaultFormatPrice;
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 640);
@@ -67,6 +82,7 @@ export default function TradingChart({
       containerRef.current.innerHTML = '';
 
       const chartHeight = isMobile ? mobileHeight : height;
+      const fmt = formatFn;
 
       const chart = lc.createChart(containerRef.current, {
         width: containerRef.current.clientWidth,
@@ -92,6 +108,9 @@ export default function TradingChart({
           secondsVisible: false,
         },
         handleScroll: { vertTouchDrag: false },
+        localization: {
+          priceFormatter: fmt,
+        },
       });
 
       if (cancelled) {
@@ -122,6 +141,14 @@ export default function TradingChart({
           wickDownColor: '#ef4444',
         });
       }
+
+      // Apply price formatter to the series price scale
+      series.applyOptions({
+        priceFormat: {
+          type: 'custom',
+          formatter: fmt,
+        },
+      });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       series.setData(data as any);
@@ -180,6 +207,15 @@ export default function TradingChart({
     chartRef.current.timeScale().setVisibleRange({ from, to: lastTime });
   }, [data]);
 
+  // Right-click to reset chart view
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    if (chartRef.current) {
+      chartRef.current.timeScale().fitContent();
+      setActiveRange(ranges?.[ranges.length - 1]?.label || 'Max');
+    }
+  }, [ranges]);
+
   if (loading) {
     return (
       <div className="card overflow-hidden">
@@ -194,7 +230,7 @@ export default function TradingChart({
   if (data.length === 0) return null;
 
   return (
-    <div className="card overflow-hidden">
+    <div className="card overflow-hidden" onContextMenu={handleContextMenu}>
       {ranges && ranges.length > 0 && (
         <div className="flex items-center gap-1 px-3 pt-3 pb-1">
           {ranges.map(r => (
