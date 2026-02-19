@@ -52,6 +52,7 @@ interface WalletXRayResult {
   grade: string;
   tokens: WalletXRayToken[];
   transfers: WalletTransfer[];
+  pnlHistory?: Array<{ time: number; value: number }>;
 }
 
 type State = 'idle' | 'loading' | 'results' | 'error';
@@ -321,7 +322,7 @@ export default function WalletXRayClient() {
   // Per-tab sort states
   const [topSort, setTopSort] = useState<SortState>({ key: 'pnl', dir: 'desc' });
   const [activeSort, setActiveSort] = useState<SortState>({ key: 'unrealized', dir: 'desc' });
-  const [historySort, setHistorySort] = useState<SortState>({ key: 'realized', dir: 'desc' });
+  const [historySort, setHistorySort] = useState<SortState>({ key: 'lastTradeTime', dir: 'desc' });
   const [activitySort, setActivitySort] = useState<SortState>({ key: 'lastTradeTime', dir: 'desc' });
 
   // Pagination
@@ -367,20 +368,6 @@ export default function WalletXRayClient() {
       const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
       if (!workerUrl) throw new Error('API not configured');
 
-      // Fire chart fetch in parallel (non-blocking)
-      fetch(`${workerUrl}/api/wallet-chart?wallet=${wallet}`)
-        .then(r => r.ok ? r.json() : null)
-        .then((d: { chartData?: Array<{ timestamp: number; value: number }> } | null) => {
-          if (d?.chartData) {
-            setChartData(d.chartData.map(p => ({
-              time: Math.floor(p.timestamp / 1000),
-              value: p.value,
-            })));
-          }
-        })
-        .catch(() => {})
-        .finally(() => setChartLoading(false));
-
       const res = await fetch(`${workerUrl}/api/wallet-xray?wallet=${wallet}`);
       if (!res.ok) {
         const data = await res.json().catch(() => ({ error: 'Request failed' }));
@@ -388,11 +375,16 @@ export default function WalletXRayClient() {
       }
 
       const data = await res.json() as WalletXRayResult;
+      // Build PnL chart from our own computed data
+      if (data.pnlHistory && data.pnlHistory.length > 0) {
+        setChartData(data.pnlHistory);
+      }
+      setChartLoading(false);
       setResult(data);
       setActiveTab('top');
-      setTopSort({ key: 'absPnl', dir: 'desc' });
+      setTopSort({ key: 'pnl', dir: 'desc' });
       setActiveSort({ key: 'unrealized', dir: 'desc' });
-      setHistorySort({ key: 'realized', dir: 'desc' });
+      setHistorySort({ key: 'lastTradeTime', dir: 'desc' });
       setActivitySort({ key: 'lastTradeTime', dir: 'desc' });
       setTopPage(0);
       setActivePage(0);
