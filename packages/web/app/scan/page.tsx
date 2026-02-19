@@ -27,7 +27,7 @@ export default function ScanPage() {
       <header className="pt-4 px-4 sm:px-6 lg:px-8 mb-2">
         <div className="flex items-center gap-2.5">
           <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-solana-purple to-solana-green flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
@@ -37,14 +37,14 @@ export default function ScanPage() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-lg font-bold text-white">Token Scanner</h1>
-              <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-semibold bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-500/30">
-                FREE
+              <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-semibold bg-solana-green/20 text-solana-green rounded-full border border-solana-green/30">
+                LIVE
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <p className="text-xs text-gray-500">Instant safety reports for any token</p>
-              <span className="sm:hidden px-1.5 py-0.5 text-[9px] font-semibold bg-cyan-500/20 text-cyan-400 rounded-full border border-cyan-500/30">
-                FREE
+              <span className="sm:hidden px-1.5 py-0.5 text-[9px] font-semibold bg-solana-green/20 text-solana-green rounded-full border border-solana-green/30">
+                LIVE
               </span>
             </div>
           </div>

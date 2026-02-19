@@ -50,7 +50,7 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
       {/* Floating expand button — visible when sidebar is collapsed */}
       <button
         onClick={toggle}
-        className={`group fixed top-4 left-4 z-50 hidden xl:flex items-center justify-center w-9 h-9 rounded-lg bg-[#111113]/80 backdrop-blur-sm border border-[#222228] text-gray-500 hover:text-solana-purple hover:border-solana-purple/30 hover:shadow-[0_0_12px_rgba(153,69,255,0.15)] ${
+        className={`group fixed bottom-16 left-4 z-50 hidden xl:flex items-center justify-center w-9 h-9 rounded-lg bg-[#111113]/80 backdrop-blur-sm border border-[#222228] text-gray-500 hover:text-solana-purple hover:border-solana-purple/30 hover:shadow-[0_0_12px_rgba(153,69,255,0.15)] ${
           sidebarOpen ? 'opacity-0 scale-75 -translate-x-3 pointer-events-none' : 'opacity-100 scale-100 translate-x-0'
         }`}
         style={{ transition: 'opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms, box-shadow 200ms, color 200ms', transitionDelay: sidebarOpen ? '0ms' : '150ms' }}
