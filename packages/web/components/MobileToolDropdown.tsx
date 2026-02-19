@@ -45,7 +45,7 @@ export const MobileToolDropdown = () => {
 
       {open && (
         <div className="absolute top-full left-0 mt-1 w-48 rounded-xl bg-[#111113] border border-[#222228] shadow-xl z-50 py-1 overflow-hidden">
-          {MOBILE_TOOLS.map(tool => {
+          {MOBILE_TOOLS.filter(t => t.id !== 'hackathon').map(tool => {
             const isActive = pathname === tool.href;
             return (
               <Link
