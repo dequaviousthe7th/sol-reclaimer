@@ -1236,25 +1236,29 @@ export default function WalletXRayClient() {
 
       {/* ── PnL Chart ── */}
       {(chartLoading || chartData.length > 0) && (
-        <TradingChart
-          key={showUsd ? 'usd' : 'sol'}
-          type="baseline"
-          data={showUsd && solPrice > 0 ? chartData.map(d => ({ time: d.time, value: Math.round(d.value * solPrice * 100) / 100 })) : chartData}
-          height={280}
-          mobileHeight={200}
-          loading={chartLoading}
-          priceFormatter={showUsd ? undefined : (n: number) => {
-            const abs = Math.abs(n);
-            if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M SOL`;
-            if (abs >= 1_000) return `${(n / 1_000).toFixed(2)}K SOL`;
-            return `${n.toFixed(2)} SOL`;
-          }}
-          ranges={[
-            { label: '7D', seconds: 604800 },
-            { label: '30D', seconds: 2592000 },
-            { label: 'Max', seconds: 0 },
-          ]}
-        />
+        <div>
+          <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Realized PnL</p>
+          <TradingChart
+            key={showUsd ? 'usd' : 'sol'}
+            type="baseline"
+            hideGrid
+            data={showUsd && solPrice > 0 ? chartData.map(d => ({ time: d.time, value: Math.round(d.value * solPrice * 100) / 100 })) : chartData}
+            height={280}
+            mobileHeight={200}
+            loading={chartLoading}
+            priceFormatter={showUsd ? undefined : (n: number) => {
+              const abs = Math.abs(n);
+              if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M SOL`;
+              if (abs >= 1_000) return `${(n / 1_000).toFixed(2)}K SOL`;
+              return `${n.toFixed(2)} SOL`;
+            }}
+            ranges={[
+              { label: '7D', seconds: 604800 },
+              { label: '30D', seconds: 2592000 },
+              { label: 'Max', seconds: 0 },
+            ]}
+          />
+        </div>
       )}
 
       {/* ── Tab Navigation ── */}

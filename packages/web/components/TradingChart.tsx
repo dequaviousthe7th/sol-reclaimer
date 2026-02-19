@@ -16,6 +16,7 @@ interface TradingChartProps {
   ranges?: TimeRange[];
   loading?: boolean;
   priceFormatter?: (price: number) => string;
+  hideGrid?: boolean;
 }
 
 const COLOR_MAP = {
@@ -45,6 +46,7 @@ export default function TradingChart({
   ranges,
   loading = false,
   priceFormatter,
+  hideGrid = false,
 }: TradingChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,17 +97,18 @@ export default function TradingChart({
           textColor: '#6b7280',
           fontSize: 11,
         },
-        grid: {
-          vertLines: { color: '#222228' },
-          horzLines: { color: '#222228' },
-        },
+        grid: hideGrid
+          ? { vertLines: { visible: false }, horzLines: { visible: false } }
+          : { vertLines: { color: '#222228' }, horzLines: { color: '#222228' } },
         crosshair: {
           mode: lc.CrosshairMode.Magnet,
         },
         rightPriceScale: {
+          borderVisible: !hideGrid,
           borderColor: '#222228',
         },
         timeScale: {
+          borderVisible: !hideGrid,
           borderColor: '#222228',
           timeVisible: true,
           secondsVisible: false,
@@ -128,14 +131,14 @@ export default function TradingChart({
         series = chart.addSeries(lc.BaselineSeries, {
           baseValue: { type: 'price', price: 0 },
           topLineColor: '#22c55e',
-          topFillColor1: 'rgba(34, 197, 94, 0.28)',
+          topFillColor1: 'rgba(34, 197, 94, 0.3)',
           topFillColor2: 'rgba(34, 197, 94, 0)',
-          bottomLineColor: '#ef4444',
-          bottomFillColor1: 'rgba(239, 68, 68, 0)',
-          bottomFillColor2: 'rgba(239, 68, 68, 0.28)',
+          bottomLineColor: '#e84482',
+          bottomFillColor1: 'rgba(232, 68, 130, 0)',
+          bottomFillColor2: 'rgba(232, 68, 130, 0.3)',
           lineWidth: 2,
           crosshairMarkerRadius: 4,
-          crosshairMarkerBorderColor: '#6b7280',
+          crosshairMarkerBorderColor: '#e84482',
           crosshairMarkerBackgroundColor: '#111113',
         });
       } else if (type === 'area') {
@@ -196,7 +199,7 @@ export default function TradingChart({
       seriesRef.current = null;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, color, height, mobileHeight, isMobile, hasData]);
+  }, [type, color, height, mobileHeight, isMobile, hasData, hideGrid]);
 
   // Update data without re-creating chart
   useEffect(() => {
