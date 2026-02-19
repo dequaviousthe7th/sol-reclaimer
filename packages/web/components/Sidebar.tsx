@@ -65,6 +65,12 @@ export const Sidebar = ({ activePath, isOpen, onToggle }: SidebarProps) => {
             <Link
               key={tool.id}
               href={tool.href}
+              onClick={(e) => {
+                if (isActive) {
+                  e.preventDefault();
+                  window.dispatchEvent(new CustomEvent('tool-reset'));
+                }
+              }}
               className={`
                 w-full flex flex-col items-center justify-center py-3 px-1 transition-colors relative
                 ${isActive

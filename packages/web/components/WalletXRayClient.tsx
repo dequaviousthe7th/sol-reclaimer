@@ -633,6 +633,13 @@ export default function WalletXRayClient() {
     }
   }, []);
 
+  // Reset when sidebar/bottom nav re-clicks the active tool
+  useEffect(() => {
+    const handler = () => reset();
+    window.addEventListener('tool-reset', handler);
+    return () => window.removeEventListener('tool-reset', handler);
+  }, [reset]);
+
   const copyWallet = useCallback(async (addr: string) => {
     try {
       await navigator.clipboard.writeText(addr);
@@ -1190,7 +1197,7 @@ export default function WalletXRayClient() {
         <div className="grid grid-cols-2 gap-3">
           <div className={`bg-[#0d0d0f] border border-[#1a1a1f] rounded-2xl p-5 transition-all duration-300 ${result.realizedPnl > 0 ? 'hover:border-green-500/20 hover:shadow-[0_0_20px_rgba(34,197,94,0.06)]' : result.realizedPnl < 0 ? 'hover:border-red-500/20 hover:shadow-[0_0_20px_rgba(239,68,68,0.06)]' : 'hover:border-gray-500/20 hover:shadow-[0_0_20px_rgba(107,114,128,0.06)]'}`}>
             <div className="flex items-center gap-1.5 mb-2.5">
-              <div className="w-2 h-2 rounded-full bg-green-500/50" />
+              <div className={`w-2 h-2 rounded-full ${result.realizedPnl > 0 ? 'bg-green-500' : result.realizedPnl < 0 ? 'bg-red-500' : 'bg-gray-500'}`} />
               <p className="text-gray-500 text-[10px] uppercase tracking-wider">Realized PnL</p>
             </div>
             <p className={`text-base sm:text-lg font-bold ${pnlColor(result.realizedPnl)}`}>
@@ -1205,7 +1212,7 @@ export default function WalletXRayClient() {
 
           <div className={`bg-[#0d0d0f] border border-[#1a1a1f] rounded-2xl p-5 transition-all duration-300 ${result.unrealizedPnl > 0 ? 'hover:border-green-500/20 hover:shadow-[0_0_20px_rgba(34,197,94,0.06)]' : result.unrealizedPnl < 0 ? 'hover:border-red-500/20 hover:shadow-[0_0_20px_rgba(239,68,68,0.06)]' : 'hover:border-gray-500/20 hover:shadow-[0_0_20px_rgba(107,114,128,0.06)]'}`}>
             <div className="flex items-center gap-1.5 mb-2.5">
-              <div className="w-2 h-2 rounded-full bg-blue-500/50" />
+              <div className={`w-2 h-2 rounded-full ${result.unrealizedPnl > 0 ? 'bg-green-500' : result.unrealizedPnl < 0 ? 'bg-red-500' : 'bg-gray-500'}`} />
               <p className="text-gray-500 text-[10px] uppercase tracking-wider">Unrealized PnL</p>
             </div>
             <p className={`text-base sm:text-lg font-bold ${pnlColor(result.unrealizedPnl)}`}>

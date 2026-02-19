@@ -106,6 +106,7 @@ export default function TradingChart({
         rightPriceScale: {
           borderVisible: !hideGrid,
           borderColor: '#222228',
+          autoScale: true,
         },
         timeScale: {
           borderVisible: !hideGrid,
@@ -116,6 +117,9 @@ export default function TradingChart({
           fixRightEdge: true,
         },
         handleScroll: { vertTouchDrag: false },
+        handleScale: {
+          axisPressedMouseMove: { price: false },
+        },
         localization: {
           priceFormatter: fmt,
         },

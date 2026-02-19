@@ -267,6 +267,14 @@ export default function TokenScannerClient() {
     chartMintRef.current = null;
   };
 
+  // Reset when sidebar/bottom nav re-clicks the active tool
+  useEffect(() => {
+    const handler = () => reset();
+    window.addEventListener('tool-reset', handler);
+    return () => window.removeEventListener('tool-reset', handler);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const copyMint = useCallback(async (mint: string) => {
     try {
       await navigator.clipboard.writeText(mint);

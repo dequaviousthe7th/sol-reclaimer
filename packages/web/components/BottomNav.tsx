@@ -18,6 +18,12 @@ export const BottomNav = ({ activePath }: BottomNavProps) => {
           <Link
             key={tool.id}
             href={tool.href}
+            onClick={(e) => {
+              if (isActive) {
+                e.preventDefault();
+                window.dispatchEvent(new CustomEvent('tool-reset'));
+              }
+            }}
             className={`
               flex flex-col items-center justify-center gap-1 px-3 py-1 transition-colors relative
               ${isActive ? 'text-solana-purple' : 'text-gray-500'}
