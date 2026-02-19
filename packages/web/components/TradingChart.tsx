@@ -112,6 +112,8 @@ export default function TradingChart({
           borderColor: '#222228',
           timeVisible: true,
           secondsVisible: false,
+          fixLeftEdge: true,
+          fixRightEdge: true,
         },
         handleScroll: { vertTouchDrag: false },
         localization: {
