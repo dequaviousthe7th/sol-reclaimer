@@ -153,6 +153,9 @@ export default function TokenScannerClient() {
   const [traderPageSize, setTraderPageSize] = useState(10);
   const chartMintRef = useRef<string | null>(null);
 
+  // Preload lightweight-charts on mount so it's ready when chart data arrives
+  useEffect(() => { import('lightweight-charts').catch(() => {}); }, []);
+
   // Convert price OHLC to market cap OHLC using supply = mcap / price
   const mcapChartData = useMemo(() => {
     if (!result || !result.marketCap || !result.price || result.price <= 0 || chartData.length === 0) {

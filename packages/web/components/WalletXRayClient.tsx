@@ -530,7 +530,7 @@ export default function WalletXRayClient() {
   const [chartLoading, setChartLoading] = useState(false);
   const [solPrice, setSolPrice] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [showUsd, setShowUsd] = useState(false);
+  const [showUsd, setShowUsd] = useState(true);
 
   // Saved wallets
   const savedWallets = useSavedWallets();
@@ -1237,11 +1237,11 @@ export default function WalletXRayClient() {
       {/* ── PnL Chart ── */}
       {(chartLoading || chartData.length > 0) && (
         <TradingChart
-          type="area"
-          data={showUsd && solPrice > 0 ? chartData.map(d => ({ time: d.time, value: d.value * solPrice })) : chartData}
+          key={showUsd ? 'usd' : 'sol'}
+          type="baseline"
+          data={showUsd && solPrice > 0 ? chartData.map(d => ({ time: d.time, value: Math.round(d.value * solPrice * 100) / 100 })) : chartData}
           height={280}
           mobileHeight={200}
-          color={result.totalPnl >= 0 ? 'green' : 'red'}
           loading={chartLoading}
           priceFormatter={showUsd ? undefined : (n: number) => {
             const abs = Math.abs(n);

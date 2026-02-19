@@ -8,7 +8,7 @@ interface TimeRange {
 }
 
 interface TradingChartProps {
-  type: 'area' | 'candlestick';
+  type: 'area' | 'candlestick' | 'baseline';
   data: Array<Record<string, number>>;
   height?: number;
   mobileHeight?: number;
@@ -54,17 +54,18 @@ export default function TradingChart({
   const observerRef = useRef<ResizeObserver | null>(null);
   const [activeRange, setActiveRange] = useState<string>(ranges?.[ranges.length - 1]?.label || 'Max');
   const [isMobile, setIsMobile] = useState(false);
-  const initRef = useRef(false);
   const latestDataRef = useRef(data);
   latestDataRef.current = data;
   const hasData = data.length > 0;
   const formatFn = priceFormatter || defaultFormatPrice;
+  const formatFnRef = useRef(formatFn);
+  formatFnRef.current = formatFn;
 
   useEffect(() => {
     setIsMobile(window.innerWidth < 640);
   }, []);
 
-  // Create chart once (re-runs when data first becomes available)
+  // Create chart (re-runs when type/color/height changes or data first becomes available)
   useEffect(() => {
     if (!containerRef.current || !hasData) return;
 
@@ -81,11 +82,10 @@ export default function TradingChart({
       const lc = await import('lightweight-charts');
       if (cancelled || !containerRef.current) return;
 
-      // Clear any leftover children (safety)
       containerRef.current.innerHTML = '';
 
       const chartHeight = isMobile ? mobileHeight : height;
-      const fmt = formatFn;
+      const fmt = formatFnRef.current;
 
       const chart = lc.createChart(containerRef.current, {
         width: containerRef.current.clientWidth,
@@ -124,7 +124,21 @@ export default function TradingChart({
       const colors = COLOR_MAP[color];
 
       let series;
-      if (type === 'area') {
+      if (type === 'baseline') {
+        series = chart.addSeries(lc.BaselineSeries, {
+          baseValue: { type: 'price', price: 0 },
+          topLineColor: '#22c55e',
+          topFillColor1: 'rgba(34, 197, 94, 0.28)',
+          topFillColor2: 'rgba(34, 197, 94, 0)',
+          bottomLineColor: '#ef4444',
+          bottomFillColor1: 'rgba(239, 68, 68, 0)',
+          bottomFillColor2: 'rgba(239, 68, 68, 0.28)',
+          lineWidth: 2,
+          crosshairMarkerRadius: 4,
+          crosshairMarkerBorderColor: '#6b7280',
+          crosshairMarkerBackgroundColor: '#111113',
+        });
+      } else if (type === 'area') {
         series = chart.addSeries(lc.AreaSeries, {
           lineColor: colors.line,
           topColor: colors.top,
@@ -145,7 +159,6 @@ export default function TradingChart({
         });
       }
 
-      // Apply price formatter to the series price scale
       series.applyOptions({
         priceFormat: {
           type: 'custom',
@@ -153,7 +166,6 @@ export default function TradingChart({
         },
       });
 
-      // Use ref to get the absolute latest data (may have updated during async import)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       series.setData(latestDataRef.current as any);
       chart.timeScale().fitContent();
@@ -161,7 +173,6 @@ export default function TradingChart({
       chartRef.current = chart;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       seriesRef.current = series as any;
-      initRef.current = true;
 
       const observer = new ResizeObserver(entries => {
         if (chartRef.current && entries[0]) {
@@ -183,9 +194,7 @@ export default function TradingChart({
         chartRef.current = null;
       }
       seriesRef.current = null;
-      initRef.current = false;
     };
-  // Re-create chart only on type/color/height change, or when data first becomes available
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, color, height, mobileHeight, isMobile, hasData]);
 
@@ -211,7 +220,6 @@ export default function TradingChart({
     chartRef.current.timeScale().setVisibleRange({ from, to: lastTime });
   }, [data]);
 
-  // Right-click to reset chart view
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     if (chartRef.current) {
