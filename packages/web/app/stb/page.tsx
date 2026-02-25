@@ -122,7 +122,7 @@ export default function BotPage() {
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-bold text-white mb-3 tracking-tight">
-              SolTools <span className="text-[#5865F2]">Bot</span>
+              SolTools<span className="text-[#5865F2]">Bot</span>
             </h1>
             <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto mb-9 leading-relaxed">
               Real-time Solana token intelligence in your Discord server.
