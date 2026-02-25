@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 
-const CA = 'TBD';
+export const SOLT_CA = 'TBD';
+const CA = SOLT_CA;
 
 export default function CopyCA() {
   const [copied, setCopied] = useState(false);

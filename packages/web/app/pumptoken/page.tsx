@@ -3,6 +3,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
 const CopyCA = dynamic(() => import('@/components/CopyCA'), { ssr: false });
+const SoltLiveData = dynamic(() => import('@/components/SoltLiveData'), { ssr: false });
 
 export const metadata: Metadata = {
   title: '$SOLT Token - SolTools',
@@ -25,7 +26,7 @@ const SolToolsBadge = () => (
 const benefits = [
   {
     title: 'Revenue Share',
-    description: 'Holders receive a share of future platform revenue as SolTools grows.',
+    description: 'Earn a cut of platform revenue. As SolTools grows, so does your bag.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -34,7 +35,7 @@ const benefits = [
   },
   {
     title: 'Early Access',
-    description: 'Be the first to try new tools before they launch to the public.',
+    description: 'Try new tools first. Holders get access before anyone else.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -43,7 +44,7 @@ const benefits = [
   },
   {
     title: 'Governance',
-    description: 'Vote on which tools get built next. Your voice shapes the roadmap.',
+    description: 'Vote on what gets built next. You decide the roadmap.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -51,8 +52,8 @@ const benefits = [
     ),
   },
   {
-    title: 'Priority Features',
-    description: 'Request and prioritize feature development. Holders get built first.',
+    title: 'Priority Builds',
+    description: 'Request features directly. Holder requests get built first.',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -64,23 +65,23 @@ const benefits = [
 const steps = [
   {
     num: '1',
-    title: 'Get SOL in your wallet',
-    description: 'You\'ll need SOL in a Solana wallet like Phantom or Solflare to buy.',
+    title: 'Get SOL ready',
+    description: 'Have SOL in a wallet like Phantom or Solflare.',
   },
   {
     num: '2',
-    title: 'Go to Pump.fun',
-    description: 'Head to Pump.fun and connect your wallet.',
+    title: 'Open Pump.fun',
+    description: 'Go to pump.fun and connect your wallet.',
   },
   {
     num: '3',
-    title: 'Search SOLTOOLS or paste CA',
-    description: 'Find the token by name or paste the contract address directly.',
+    title: 'Find $SOLT',
+    description: 'Search "SOLTOOLS" or paste the contract address.',
   },
   {
     num: '4',
-    title: 'Buy $SOLT',
-    description: 'Enter your amount and confirm the transaction. Welcome aboard.',
+    title: 'Buy and hold',
+    description: 'Confirm the transaction. Welcome to the community.',
   },
 ];
 
@@ -88,10 +89,10 @@ export default function PumpTokenPage() {
   return (
     <main className="flex-1 flex flex-col xl:overflow-hidden relative">
       <div className="flex-1 overflow-y-auto scroll-fade">
-        <div className="max-w-4xl mx-auto px-5 sm:px-8 py-12 sm:py-20">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pt-12 sm:pt-20">
 
           {/* Hero */}
-          <section className="text-center mb-20 sm:mb-28">
+          <section className="text-center mb-14 sm:mb-20">
             <div className="flex justify-center mb-6">
               <div className="relative">
                 <div className="float w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden relative shadow-[0_0_40px_rgba(153,69,255,0.2)]">
@@ -105,9 +106,8 @@ export default function PumpTokenPage() {
             <h1 className="text-3xl sm:text-5xl font-bold text-white mb-3 tracking-tight">
               SOLTOOLS <span className="bg-gradient-to-r from-solana-purple to-solana-green bg-clip-text text-transparent">$SOLT</span>
             </h1>
-            <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto mb-4 leading-relaxed">
-              The community token powering the future of SolTools.
-              Fund development, earn rewards, shape what gets built.
+            <p className="text-gray-400 text-sm sm:text-base max-w-lg mx-auto mb-4 leading-relaxed">
+              The community token behind SolTools. Hold $SOLT to earn revenue, get early access, and decide what gets built next.
             </p>
 
             {/* Launched on pump.fun badge */}
@@ -176,50 +176,75 @@ export default function PumpTokenPage() {
             <div className="mt-8">
               <p className="text-[10px] uppercase tracking-[0.25em] text-gray-600 font-semibold mb-3">Trade on</p>
               <div className="flex flex-wrap items-center justify-center gap-2">
-                {[
-                  { name: 'Pump.fun', href: '#', icon: '/pumpfun-avatar.jpg', isImg: true },
-                  { name: 'Axiom', href: 'https://axiom.trade', isImg: false },
-                  { name: 'Photon', href: 'https://photon-sol.tinyastro.io', isImg: false },
-                  { name: 'GMGN', href: 'https://gmgn.ai', isImg: false },
-                  { name: 'Dexscreener', href: 'https://dexscreener.com', isImg: false },
-                ].map(p => (
-                  <a
-                    key={p.name}
-                    href={p.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all"
-                  >
-                    {p.isImg && <img src={p.icon!} alt={p.name} className="w-3.5 h-3.5 rounded-full" />}
-                    {p.name}
-                  </a>
-                ))}
+                <a href="#" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all">
+                  <img src="/pumpfun-avatar.jpg" alt="Pump.fun" className="w-3.5 h-3.5 rounded-full" />
+                  Pump.fun
+                </a>
+                <a href="https://axiom.trade" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19.5h20L12 2z" fill="#6366f1" /><path d="M12 8l-5 9h10l-5-9z" fill="#111" /></svg>
+                  Axiom
+                </a>
+                <a href="https://photon-sol.tinyastro.io" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#f59e0b" /><circle cx="12" cy="12" r="5" fill="#111" /><circle cx="12" cy="12" r="2" fill="#f59e0b" /></svg>
+                  Photon
+                </a>
+                <a href="https://gmgn.ai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#10b981" /><path d="M7 13l3 3 7-7" stroke="#111" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  GMGN
+                </a>
+                <a href="https://dexscreener.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0d0d0f] border border-[#1a1a1f] text-gray-400 text-[11px] font-medium hover:text-white hover:border-solana-purple/25 transition-all">
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#0ea5e9" /><path d="M8 16l3-5 3 3 4-6" stroke="#111" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  Dexscreener
+                </a>
               </div>
             </div>
           </section>
+        </div>
 
+        {/* Live Chart + Top Traders — only visible when CA is set */}
+        <SoltLiveData />
+
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pb-12 sm:pb-20">
           {/* Why $SOLT */}
-          <section className="mb-20 sm:mb-28">
+          <section className="mb-14 sm:mb-20">
             <div className="text-center mb-8">
               <p className="text-[10px] uppercase tracking-[0.25em] text-solana-purple/70 font-semibold mb-2">The Vision</p>
               <h2 className="text-xl sm:text-2xl font-bold text-white">Why $SOLT?</h2>
             </div>
 
-            <div className="bg-[#0d0d0f] border border-[#1a1a1f] rounded-xl p-6 sm:p-8 max-w-2xl mx-auto space-y-4">
-              <p className="text-gray-400 text-[13px] sm:text-sm leading-relaxed">
-                SolTools is free and open source — and it always will be. But building and maintaining quality tools takes time and resources. $SOLT is how we fund that work while giving back to the community that supports us.
-              </p>
-              <p className="text-gray-400 text-[13px] sm:text-sm leading-relaxed">
-                Every token holder becomes a stakeholder in SolTools. You get real benefits — revenue share, early access to new tools, and a direct voice in what gets built next. This isn&apos;t a cash grab. It&apos;s a community fund.
-              </p>
-              <p className="text-gray-400 text-[13px] sm:text-sm leading-relaxed">
-                We&apos;re building in public, shipping tools that people actually use, and putting holders first. If SolTools wins, $SOLT holders win.
-              </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl mx-auto">
+              <div className="bg-[#0d0d0f] border border-[#1a1a1f] rounded-xl p-5 hover:border-solana-purple/20 transition-all duration-300">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-solana-purple/10 to-solana-green/10 flex items-center justify-center text-solana-purple mb-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-[13px] mb-1.5">Free forever</h3>
+                <p className="text-gray-500 text-[11.5px] leading-relaxed">SolTools is free and open source — always. $SOLT funds development while giving back to the community.</p>
+              </div>
+              <div className="bg-[#0d0d0f] border border-[#1a1a1f] rounded-xl p-5 hover:border-solana-purple/20 transition-all duration-300">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-solana-purple/10 to-solana-green/10 flex items-center justify-center text-solana-green mb-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-[13px] mb-1.5">Be a stakeholder</h3>
+                <p className="text-gray-500 text-[11.5px] leading-relaxed">Revenue share, early access, and a direct voice in what gets built. Not a cash grab — a community fund.</p>
+              </div>
+              <div className="bg-[#0d0d0f] border border-[#1a1a1f] rounded-xl p-5 hover:border-solana-purple/20 transition-all duration-300">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-solana-purple/10 to-solana-green/10 flex items-center justify-center text-solana-purple mb-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <h3 className="text-white font-semibold text-[13px] mb-1.5">Win together</h3>
+                <p className="text-gray-500 text-[11.5px] leading-relaxed">Building in public, shipping real tools. If SolTools wins, $SOLT holders win.</p>
+              </div>
             </div>
           </section>
 
           {/* Benefits Grid */}
-          <section className="mb-20 sm:mb-28">
+          <section className="mb-14 sm:mb-20">
             <div className="text-center mb-8">
               <p className="text-[10px] uppercase tracking-[0.25em] text-solana-green/70 font-semibold mb-2">Holder Benefits</p>
               <h2 className="text-xl sm:text-2xl font-bold text-white">What you get</h2>
@@ -239,7 +264,7 @@ export default function PumpTokenPage() {
           </section>
 
           {/* Tokenomics */}
-          <section className="mb-20 sm:mb-28">
+          <section className="mb-14 sm:mb-20">
             <div className="text-center mb-8">
               <p className="text-[10px] uppercase tracking-[0.25em] text-solana-purple/70 font-semibold mb-2">Tokenomics</p>
               <h2 className="text-xl sm:text-2xl font-bold text-white">100% fair launch</h2>
@@ -268,7 +293,7 @@ export default function PumpTokenPage() {
           </section>
 
           {/* How to Buy */}
-          <section className="mb-20 sm:mb-28">
+          <section className="mb-14 sm:mb-20">
             <div className="text-center mb-8">
               <p className="text-[10px] uppercase tracking-[0.25em] text-solana-green/70 font-semibold mb-2">Get Started</p>
               <h2 className="text-xl sm:text-2xl font-bold text-white">How to buy</h2>
@@ -298,9 +323,9 @@ export default function PumpTokenPage() {
             <div className="relative rounded-2xl border border-solana-purple/15 bg-gradient-to-br from-solana-purple/[0.05] to-solana-green/[0.03] p-10 sm:p-14 text-center overflow-hidden">
               <div className="shimmer absolute inset-0 pointer-events-none opacity-50" />
               <div className="relative z-10">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">Join the community</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">Get in early</h2>
                 <p className="text-gray-500 text-[13px] sm:text-sm mb-8 max-w-md mx-auto">
-                  Be part of something real. Fund development, earn rewards, shape the future of SolTools.
+                  SolTools is growing. Get $SOLT now and grow with it.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
                   <a
