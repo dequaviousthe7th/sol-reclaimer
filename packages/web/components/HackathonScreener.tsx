@@ -14,21 +14,10 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'priceUsd', label: 'Price' },
 ];
 
-const DEADLINE = new Date('2026-02-18T00:00:00Z').getTime();
-
-function useCountdown(target: number) {
-  const [now, setNow] = useState(Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const diff = Math.max(0, target - now);
-  const days = Math.floor(diff / 86_400_000);
-  const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-  const minutes = Math.floor((diff % 3_600_000) / 60_000);
-  const seconds = Math.floor((diff % 60_000) / 1000);
-  return { days, hours, minutes, seconds, expired: diff === 0 };
-}
+const WINNERS = [
+  { symbol: '$ZAUTH', name: 'ZAUTH' },
+  { symbol: '$OPAL', name: 'OPAL' },
+];
 
 const INITIAL_MINTS = [
   '6CRayr4GnspC1GUDLs693oPk7AoDSXLXSx9kskgupump',
@@ -107,7 +96,6 @@ export const HackathonScreener = () => {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortKey>('marketCap');
   const [submitOpen, setSubmitOpen] = useState(false);
-  const countdown = useCountdown(DEADLINE);
 
   const fetchTokens = async () => {
     const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
@@ -170,37 +158,34 @@ export const HackathonScreener = () => {
         <div className="p-4 sm:p-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h2 className="text-white font-bold text-base sm:text-lg">PumpFun "Build in Public" Hackathon</h2>
-              <p className="text-gray-400 text-xs sm:text-sm mt-1">$3M fund &middot; 12 projects &middot; $250k each @ $10M valuation</p>
-            </div>
-            <div className="flex items-center gap-3 text-center">
-              {countdown.expired ? (
-                <span className="text-red-400 font-semibold text-sm">Deadline passed</span>
-              ) : (
-                <>
-                  <div>
-                    <p className="text-white font-bold text-lg leading-none">{countdown.days}</p>
-                    <p className="text-gray-500 text-[10px] uppercase">Days</p>
-                  </div>
-                  <span className="text-gray-600">:</span>
-                  <div>
-                    <p className="text-white font-bold text-lg leading-none">{String(countdown.hours).padStart(2, '0')}</p>
-                    <p className="text-gray-500 text-[10px] uppercase">Hrs</p>
-                  </div>
-                  <span className="text-gray-600">:</span>
-                  <div>
-                    <p className="text-white font-bold text-lg leading-none">{String(countdown.minutes).padStart(2, '0')}</p>
-                    <p className="text-gray-500 text-[10px] uppercase">Min</p>
-                  </div>
-                  <span className="text-gray-600">:</span>
-                  <div>
-                    <p className="text-white font-bold text-lg leading-none">{String(countdown.seconds).padStart(2, '0')}</p>
-                    <p className="text-gray-500 text-[10px] uppercase">Sec</p>
-                  </div>
-                </>
-              )}
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-white font-bold text-base sm:text-lg">PumpFun &ldquo;Build in Public&rdquo; Hackathon</h2>
+                <span className="px-2 py-0.5 text-[10px] font-semibold bg-solana-green/20 text-solana-green rounded-full border border-solana-green/30 animate-pulse">ONGOING</span>
+              </div>
+              <p className="text-gray-400 text-xs sm:text-sm">$3M fund &middot; 12 projects &middot; $250k each @ $10M valuation</p>
             </div>
           </div>
+
+          {/* Winners */}
+          {WINNERS.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-[#1a1a1f]">
+              <p className="text-[10px] uppercase tracking-wider text-solana-green/70 font-semibold mb-2">Winners So Far</p>
+              <div className="flex flex-wrap gap-2">
+                {WINNERS.map(w => (
+                  <div key={w.symbol} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-solana-green/10 border border-solana-green/20">
+                    <svg className="w-3 h-3 text-solana-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-solana-green text-[11px] font-semibold">{w.symbol}</span>
+                    <span className="text-gray-500 text-[10px]">{w.name}</span>
+                  </div>
+                ))}
+                <div className="flex items-center px-2.5 py-1 rounded-lg bg-[#111113] border border-[#222228]">
+                  <span className="text-gray-500 text-[10px]">More winners TBD...</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

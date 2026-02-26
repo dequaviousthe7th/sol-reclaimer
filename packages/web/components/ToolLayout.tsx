@@ -22,7 +22,7 @@ const SoltPromo = () => {
     return localStorage.getItem(SOLT_PROMO_KEY) === 'true';
   });
 
-  if (dismissed || pathname === '/pumptoken' || pathname === '/burn') return null;
+  if (dismissed || pathname === '/pumptoken' || pathname === '/burn-lock') return null;
 
   const isHome = pathname === '/';
   const isToolPage = pathname === '/xray' || pathname === '/scan';
@@ -116,7 +116,7 @@ export const ToolLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Main content area — offset by sidebar width on desktop */}
       <div
-        className={`flex-1 flex flex-col xl:min-h-0 ${
+        className={`flex-1 flex flex-col xl:min-h-0 xl:overflow-y-auto ${
           sidebarOpen ? 'xl:ml-[72px]' : 'xl:ml-0'
         }`}
         style={{ transition: 'margin-left 350ms cubic-bezier(0.16, 1, 0.3, 1)' }}

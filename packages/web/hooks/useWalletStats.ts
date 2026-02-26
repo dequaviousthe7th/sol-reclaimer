@@ -19,6 +19,33 @@ export interface VanityStats {
   currentBalance: number;
 }
 
+export interface BurnRecord {
+  txSig: string;
+  mint: string;
+  amount: number;
+  symbol: string;
+  tokenName: string;
+  tokenImage: string;
+  timestamp: number;
+}
+
+export interface BurnStats {
+  totalBurns: number;
+  records: BurnRecord[];
+}
+
+export function getBurnStats(walletAddress: string | null): BurnStats {
+  if (!walletAddress) return { totalBurns: 0, records: [] };
+  try {
+    const records: BurnRecord[] = JSON.parse(
+      localStorage.getItem(`soltools-burn-history-${walletAddress}`) || '[]'
+    );
+    return { totalBurns: records.length, records };
+  } catch {
+    return { totalBurns: 0, records: [] };
+  }
+}
+
 const EMPTY_RECLAIM: ReclaimStats = {
   totalSolReclaimed: 0,
   totalAccountsClosed: 0,

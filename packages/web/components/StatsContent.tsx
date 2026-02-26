@@ -1,9 +1,16 @@
 'use client';
 
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletStats, ReclaimStats, VanityStats } from '../hooks/useWalletStats';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useWalletStats, ReclaimStats, VanityStats, getBurnStats, BurnStats, BurnRecord } from '../hooks/useWalletStats';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
+import {
+  SolanaStreamClient,
+  getNumberFromBN,
+  StreamDirection,
+  StreamType,
+} from '@streamflow/stream';
+import type { ICluster } from '@streamflow/stream';
 
 /* ── SOL price hook ──────────────────────────── */
 function useSolPrice() {
@@ -35,13 +42,20 @@ function useCounter(end: number, duration = 1000) {
   return val;
 }
 
+/* ── Lock stats types ────────────────────────── */
+interface LockStatsInfo {
+  totalLocks: number;
+  activeLocks: number;
+  recentLocks: { mint: string; amount: number; startTime: number; unlockTime: number; withdrawn: boolean }[];
+}
+
 /* ── Achievements ────────────────────────────── */
 interface Achievement {
   id: string;
   label: string;
   desc: string;
   icon: string;
-  check: (r: ReclaimStats | null, v: VanityStats | null) => boolean;
+  check: (r: ReclaimStats | null, v: VanityStats | null, b: BurnStats | null, l: LockStatsInfo | null) => boolean;
 }
 
 const ACHIEVEMENTS: Achievement[] = [
@@ -52,6 +66,13 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'key-maker', label: 'Key Maker', desc: 'Generated a vanity address', icon: '🔑', check: (_r, v) => (v?.purchases ?? 0) > 0 },
   { id: 'collector', label: 'Collector', desc: 'Bought 10+ vanity tokens', icon: '💎', check: (_r, v) => (v?.tokensBought ?? 0) >= 10 },
   { id: 'power-user', label: 'Power User', desc: 'Used both Reclaimer & Vanity', icon: '⚡', check: (r, v) => (r?.uses ?? 0) > 0 && (v?.purchases ?? 0) > 0 },
+  { id: 'first-burn', label: 'First Burn', desc: 'Burned tokens for the first time', icon: '🔥', check: (_r, _v, b) => (b?.totalBurns ?? 0) > 0 },
+  { id: 'incinerator', label: 'Incinerator', desc: 'Burned tokens 10+ times', icon: '🌋', check: (_r, _v, b) => (b?.totalBurns ?? 0) >= 10 },
+  { id: 'first-lock', label: 'First Lock', desc: 'Created a token lock', icon: '🔒', check: (_r, _v, _b, l) => (l?.totalLocks ?? 0) > 0 },
+  { id: 'diamond-hands', label: 'Diamond Hands', desc: 'Locked tokens for 90+ days', icon: '💎', check: (_r, _v, _b, l) => {
+    if (!l) return false;
+    return l.recentLocks.some(lock => (lock.unlockTime - lock.startTime) >= 7_776_000);
+  }},
 ];
 
 /* ── Toast notification types ────────────────── */
@@ -68,6 +89,77 @@ export default function StatsContent() {
   const { reclaimStats, vanityStats, loading } = useWalletStats(walletAddress);
   const solPrice = useSolPrice();
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [burnStats, setBurnStats] = useState<BurnStats | null>(null);
+  const [lockStats, setLockStats] = useState<LockStatsInfo | null>(null);
+  const [lockStatsLoading, setLockStatsLoading] = useState(false);
+
+  /* ── Streamflow client ───────────────────────── */
+  const streamClient = useMemo(() => {
+    const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL;
+    if (!rpcUrl) return null;
+    try {
+      return new SolanaStreamClient(rpcUrl, 'mainnet' as ICluster);
+    } catch { return null; }
+  }, []);
+
+  /* ── Load burn stats from localStorage ─────── */
+  useEffect(() => {
+    if (!walletAddress) { setBurnStats(null); return; }
+    setBurnStats(getBurnStats(walletAddress));
+  }, [walletAddress]);
+
+  /* ── Load lock stats from Streamflow ────────── */
+  useEffect(() => {
+    if (!walletAddress || !streamClient) { setLockStats(null); return; }
+    let cancelled = false;
+    setLockStatsLoading(true);
+
+    streamClient.get({
+      address: walletAddress,
+      type: StreamType.All,
+      direction: StreamDirection.All,
+    }).then(streams => {
+      if (cancelled) return;
+      let totalLocks = 0;
+      let activeLocks = 0;
+      const recentLocks: LockStatsInfo['recentLocks'] = [];
+
+      for (const [, stream] of streams) {
+        if (stream.sender !== walletAddress) continue;
+        if (stream.canceledAt > 0) continue;
+        totalLocks++;
+
+        const depositedAmount = getNumberFromBN(stream.depositedAmount, 9);
+        const withdrawnAmount = getNumberFromBN(stream.withdrawnAmount, 9);
+        const isWithdrawn = withdrawnAmount >= depositedAmount * 0.99 || stream.closed;
+
+        if (!isWithdrawn) activeLocks++;
+
+        recentLocks.push({
+          mint: stream.mint,
+          amount: depositedAmount,
+          startTime: stream.start,
+          unlockTime: stream.cliff > 0 ? stream.cliff : stream.end,
+          withdrawn: isWithdrawn,
+        });
+      }
+
+      // Sort by start time (most recent first), take top 5
+      recentLocks.sort((a, b) => b.startTime - a.startTime);
+
+      setLockStats({
+        totalLocks,
+        activeLocks,
+        recentLocks: recentLocks.slice(0, 5),
+      });
+    }).catch(() => {
+      if (!cancelled) setLockStats({ totalLocks: 0, activeLocks: 0, recentLocks: [] });
+    }).finally(() => {
+      if (!cancelled) setLockStatsLoading(false);
+    });
+
+    return () => { cancelled = true; };
+  }, [walletAddress, streamClient]);
 
   /* ── Toast helpers ─────────────────────────── */
   const dismissToast = useCallback((id: string) => {
@@ -85,7 +177,7 @@ export default function StatsContent() {
 
     const newlyEarned = ACHIEVEMENTS.filter(a => {
       if (seenSet.has(a.id)) return false;
-      return a.check(reclaimStats, vanityStats);
+      return a.check(reclaimStats, vanityStats, burnStats, lockStats);
     });
     if (newlyEarned.length === 0) return;
 
@@ -100,7 +192,7 @@ export default function StatsContent() {
         setTimeout(() => dismissToast(toastId), 4000);
       }, i * 600);
     });
-  }, [loading, connected, walletAddress, reclaimStats, vanityStats, dismissToast]);
+  }, [loading, connected, walletAddress, reclaimStats, vanityStats, burnStats, lockStats, dismissToast]);
 
   /* ── Disconnected ──────────────────────────── */
   if (!connected) {
@@ -143,8 +235,8 @@ export default function StatsContent() {
   const lastPurchase = vanityStats?.lastPurchase ?? 0;
   const usdVanitySpent = solPrice ? vanitySpent * solPrice : null;
 
-  const earned = ACHIEVEMENTS.filter(a => a.check(reclaimStats, vanityStats));
-  const locked = ACHIEVEMENTS.filter(a => !a.check(reclaimStats, vanityStats));
+  const earned = ACHIEVEMENTS.filter(a => a.check(reclaimStats, vanityStats, burnStats, lockStats));
+  const locked = ACHIEVEMENTS.filter(a => !a.check(reclaimStats, vanityStats, burnStats, lockStats));
 
   return (
     <>
@@ -253,6 +345,121 @@ export default function StatsContent() {
                   )}
                   <StatCard label="Last Purchase" value={lastPurchase ? new Date(lastPurchase).toLocaleDateString() : '—'} />
                 </div>
+              </section>
+
+              {/* Burn Stats */}
+              <section className="stat-fade-in" style={{ animationDelay: '0.3s' }}>
+                <SectionHeader
+                  title="Token Burns"
+                  href="/burn-lock"
+                  iconBg="from-orange-500/15 to-orange-500/5"
+                  iconBorder="border-orange-500/10"
+                  icon={
+                    <svg className="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                    </svg>
+                  }
+                />
+                <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                  <StatCard label="Total Burns" value={String(burnStats?.totalBurns ?? 0)} accent="orange" />
+                  <StatCard label="Tokens Burned" value={String(burnStats?.records.length ?? 0)} accent="orange" />
+                </div>
+                {/* Recent burns */}
+                {burnStats && burnStats.records.length > 0 ? (
+                  <div className="space-y-1.5">
+                    <p className="text-gray-600 text-[10px] font-semibold uppercase tracking-wider">Recent Burns</p>
+                    {burnStats.records.slice(0, 3).map((record, i) => (
+                      <div key={`${record.txSig}-${i}`} className="flex items-center gap-2.5 rounded-lg bg-[#111113] border border-[#222228] p-2.5 hover:border-orange-500/20 transition-all">
+                        {record.tokenImage ? (
+                          <img src={record.tokenImage} alt="" className="w-6 h-6 rounded-md flex-shrink-0 object-cover" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                        ) : (
+                          <div className="w-6 h-6 rounded-md bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                            <svg className="w-3 h-3 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                            </svg>
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-[11px] font-medium truncate">
+                            {record.tokenName || record.mint.slice(0, 8) + '...'}
+                            {record.symbol && <span className="text-gray-500 ml-1">${record.symbol}</span>}
+                          </p>
+                          <p className="text-orange-400 text-[10px] font-mono">{record.amount.toLocaleString()} burned</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-gray-600 text-[9px]">{new Date(record.timestamp).toLocaleDateString()}</p>
+                          <a href={`https://solscan.io/tx/${record.txSig}`} target="_blank" rel="noopener noreferrer" className="text-solana-purple text-[9px] hover:underline">Solscan</a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600 text-[10px]">No burns yet. Burn tokens to see them here.</p>
+                )}
+              </section>
+
+              {/* Lock Stats */}
+              <section className="stat-fade-in" style={{ animationDelay: '0.35s' }}>
+                <SectionHeader
+                  title="Token Locks"
+                  href="/burn-lock"
+                  iconBg="from-blue-500/15 to-blue-500/5"
+                  iconBorder="border-blue-500/10"
+                  icon={
+                    <svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  }
+                />
+                {lockStatsLoading ? (
+                  <div className="flex items-center gap-2 py-2">
+                    <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+                    <p className="text-gray-600 text-[11px]">Loading lock stats...</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                      <StatCard label="Total Locks" value={String(lockStats?.totalLocks ?? 0)} accent="blue" />
+                      <StatCard label="Active Locks" value={String(lockStats?.activeLocks ?? 0)} accent="blue" />
+                    </div>
+                    {/* Recent locks */}
+                    {lockStats && lockStats.recentLocks.length > 0 ? (
+                      <div className="space-y-1.5">
+                        <p className="text-gray-600 text-[10px] font-semibold uppercase tracking-wider">Recent Locks</p>
+                        {lockStats.recentLocks.slice(0, 3).map((lock, i) => {
+                          const nowSec = Math.floor(Date.now() / 1000);
+                          const isExpired = nowSec >= lock.unlockTime;
+                          return (
+                            <div key={`lock-${i}`} className="flex items-center gap-2.5 rounded-lg bg-[#111113] border border-[#222228] p-2.5 hover:border-blue-500/20 transition-all">
+                              <div className="w-6 h-6 rounded-md bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white text-[11px] font-medium truncate">
+                                  {lock.mint.slice(0, 8)}...
+                                </p>
+                                <p className="text-blue-400 text-[10px] font-mono">{lock.amount.toLocaleString()} locked</p>
+                              </div>
+                              <span className={`px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase ${
+                                lock.withdrawn
+                                  ? 'bg-[#1a1a1f] text-gray-600'
+                                  : isExpired
+                                    ? 'bg-green-500/15 text-green-400'
+                                    : 'bg-blue-500/15 text-blue-400'
+                              }`}>
+                                {lock.withdrawn ? 'Unlocked' : isExpired ? 'Unlockable' : 'Locked'}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-gray-600 text-[10px]">No locks yet. Lock tokens to see them here.</p>
+                    )}
+                  </>
+                )}
               </section>
 
               {/* Empty state */}
@@ -460,25 +667,37 @@ function SectionHeader({
 function StatCard({ label, value, accent }: {
   label: string;
   value: string;
-  accent?: 'green' | 'purple';
+  accent?: 'green' | 'purple' | 'orange' | 'blue';
 }) {
   const dotColor = accent === 'green'
     ? 'bg-solana-green'
     : accent === 'purple'
       ? 'bg-solana-purple'
-      : 'bg-gray-600';
+      : accent === 'orange'
+        ? 'bg-orange-400'
+        : accent === 'blue'
+          ? 'bg-blue-400'
+          : 'bg-gray-600';
 
   const valueColor = accent === 'green'
     ? 'text-solana-green'
     : accent === 'purple'
       ? 'text-solana-purple'
-      : 'text-white';
+      : accent === 'orange'
+        ? 'text-orange-400'
+        : accent === 'blue'
+          ? 'text-blue-400'
+          : 'text-white';
 
   const hoverBorder = accent === 'green'
     ? 'hover:border-solana-green/20 hover:shadow-[0_0_12px_rgba(20,241,149,0.05)]'
     : accent === 'purple'
       ? 'hover:border-solana-purple/20 hover:shadow-[0_0_12px_rgba(153,69,255,0.05)]'
-      : 'hover:border-[#333]';
+      : accent === 'orange'
+        ? 'hover:border-orange-500/20 hover:shadow-[0_0_12px_rgba(249,115,22,0.05)]'
+        : accent === 'blue'
+          ? 'hover:border-blue-500/20 hover:shadow-[0_0_12px_rgba(59,130,246,0.05)]'
+          : 'hover:border-[#333]';
 
   return (
     <div className={`rounded-xl bg-[#111113] border border-[#222228] p-3.5 transition-all duration-200 ${hoverBorder}`}>

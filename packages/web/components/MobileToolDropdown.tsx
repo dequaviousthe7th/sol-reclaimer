@@ -12,7 +12,7 @@ const MOBILE_TOOLS = [
   { id: 'hackathon', label: 'Hackathon', href: '/hackathon', description: 'Hackathon screener' },
   { id: 'scan', label: 'Scanner', href: '/scan', description: 'Token safety scanner' },
   { id: 'xray', label: 'X-Ray', href: '/xray', description: 'Wallet PnL analysis' },
-  { id: 'burn', label: 'Burn or Lock', href: '/burn', description: 'Burn or lock tokens' },
+  { id: 'burn', label: 'Burn or Lock', href: '/burn-lock', description: 'Burn or lock tokens' },
   { id: 'stats', label: 'My Stats', href: '/stats', description: 'Your activity & achievements' },
 ] as const;
 
