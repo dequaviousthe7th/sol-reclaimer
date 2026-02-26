@@ -597,7 +597,7 @@ export default function WalletXRayClient() {
     setState('results');
   }, []);
 
-  const analyzeWallet = useCallback(async (wallet: string) => {
+  const analyzeWallet = useCallback(async (wallet: string, forceRefresh = false) => {
     if (!isValidBase58(wallet)) return;
 
     setState('loading');
@@ -606,18 +606,20 @@ export default function WalletXRayClient() {
     setChartDataUsd([]);
     setChartLoading(true);
 
-    // Check client-side cache (3 min TTL)
-    const cached = resultCacheRef.current.get(wallet);
-    if (cached && Date.now() - cached.fetchedAt < 180_000) {
-      applyResult(cached.data);
-      return;
+    // Check client-side cache (3 min TTL) — skip on force refresh
+    if (!forceRefresh) {
+      const cached = resultCacheRef.current.get(wallet);
+      if (cached && Date.now() - cached.fetchedAt < 180_000) {
+        applyResult(cached.data);
+        return;
+      }
     }
 
     try {
       const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
       if (!workerUrl) throw new Error('API not configured');
 
-      const res = await fetch(`${workerUrl}/api/wallet-xray?wallet=${wallet}`);
+      const res = await fetch(`${workerUrl}/api/wallet-xray?wallet=${wallet}${forceRefresh ? '&nocache=1' : ''}`);
       if (!res.ok) {
         const data = await res.json().catch(() => ({ error: 'Request failed' }));
         throw new Error((data as { error?: string }).error || `Error ${res.status}`);
@@ -1138,6 +1140,15 @@ export default function WalletXRayClient() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 )}
+              </button>
+              <button
+                onClick={() => analyzeWallet(result.wallet, true)}
+                className="text-gray-600 hover:text-solana-green transition-colors"
+                title="Refresh data"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
               </button>
             </div>
           </div>

@@ -85,6 +85,14 @@ Visit **[soltools.net](https://soltools.net)** to browse all tools.
 
 ### Burn & Lock
 
+<p align="center">
+  <img src="docs/preview-burn.png" alt="Burn Tokens" width="800"/>
+</p>
+
+<p align="center">
+  <img src="docs/preview-lock.png" alt="Lock Tokens" width="800"/>
+</p>
+
 1. Go to [soltools.net/burn-lock](https://soltools.net/burn-lock)
 2. Connect your Solana wallet
 3. **Burn** — permanently destroy tokens by sending them to a burn address
@@ -107,6 +115,10 @@ Visit **[soltools.net](https://soltools.net)** to browse all tools.
 </p>
 
 ### Hackathon Screener
+
+<p align="center">
+  <img src="docs/preview-hackathon.png" alt="Hackathon Screener" width="800"/>
+</p>
 
 1. Go to [soltools.net/hackathon](https://soltools.net/hackathon)
 2. Browse PumpFun "Build in Public" hackathon tokens with live market data
