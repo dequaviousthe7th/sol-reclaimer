@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const HEARTBEAT_INTERVAL = 60_000; // 60 seconds
 
@@ -44,7 +44,7 @@ export const Heartbeat = () => {
   return null;
 };
 
-export function trackSocialClick(button: 'github' | 'x' | 'share-x' | 'built-by') {
+export function trackSocialClick(button: 'github' | 'x' | 'share-x' | 'share-burn' | 'built-by') {
   const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
   if (!workerUrl) return;
 
@@ -55,12 +55,53 @@ export function trackSocialClick(button: 'github' | 'x' | 'share-x' | 'built-by'
   }).catch(() => {});
 }
 
+// Active users count with green breathing dot — polls every 10s for near-realtime
+export const ActiveUsersCount = () => {
+  const [count, setCount] = useState(1);
+  const [displayCount, setDisplayCount] = useState(1);
+
+  useEffect(() => {
+    const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
+    if (!workerUrl) return;
+
+    const fetchCount = () => {
+      fetch(`${workerUrl}/api/analytics/active`)
+        .then(r => r.json())
+        .then((d: { active: number }) => { if (d.active >= 1) setCount(d.active); })
+        .catch(() => {});
+    };
+
+    fetchCount();
+    const id = setInterval(fetchCount, 10_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Smoothly animate the displayed number towards the real count
+  useEffect(() => {
+    if (displayCount === count) return;
+    const step = count > displayCount ? 1 : -1;
+    const delay = Math.max(30, 200 / Math.abs(count - displayCount));
+    const tid = setTimeout(() => setDisplayCount(prev => prev + step), delay);
+    return () => clearTimeout(tid);
+  }, [count, displayCount]);
+
+  return (
+    <span className="flex items-center gap-1.5">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-solana-green opacity-60" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-solana-green" />
+      </span>
+      <span>{displayCount} Active User{displayCount !== 1 ? 's' : ''}</span>
+    </span>
+  );
+};
+
 // Client component for tracked footer social links
 export const FooterSocialLinks = () => {
   return (
     <div className="flex items-center gap-3 mx-auto xl:mx-0 flex-shrink-0">
       <a
-        href="https://github.com/dequaviousthe7th/sol-reclaimer"
+        href="https://github.com/dequaviousthe7th/sol-tools"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-1 hover:text-solana-purple transition-colors"
