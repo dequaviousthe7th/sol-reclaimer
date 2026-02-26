@@ -534,6 +534,9 @@ export default function WalletXRayClient() {
   const [copied, setCopied] = useState(false);
   const [showUsd, setShowUsd] = useState(true);
 
+  // Client-side result cache (instant re-lookups within session)
+  const resultCacheRef = useRef<Map<string, { data: WalletXRayResult; fetchedAt: number }>>(new Map());
+
   // Saved wallets
   const savedWallets = useSavedWallets();
   const [importMsg, setImportMsg] = useState<string | null>(null);
@@ -576,6 +579,24 @@ export default function WalletXRayClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const applyResult = useCallback((data: WalletXRayResult) => {
+    if (data.pnlHistory && data.pnlHistory.length > 0) setChartData(data.pnlHistory);
+    if (data.pnlHistoryUsd && data.pnlHistoryUsd.length > 0) setChartDataUsd(data.pnlHistoryUsd);
+    setChartLoading(false);
+    setResult(data);
+    setActiveTab('top');
+    setTopSort({ key: 'pnl', dir: 'desc' });
+    setActiveSort({ key: 'unrealized', dir: 'desc' });
+    setHistorySort({ key: 'lastTradeTime', dir: 'desc' });
+    setActivitySort({ key: 'lastTradeTime', dir: 'desc' });
+    setTopPage(0);
+    setActivePage(0);
+    setHistoryPage(0);
+    setActivityPage(0);
+    setTransfersPage(0);
+    setState('results');
+  }, []);
+
   const analyzeWallet = useCallback(async (wallet: string) => {
     if (!isValidBase58(wallet)) return;
 
@@ -584,6 +605,13 @@ export default function WalletXRayClient() {
     setChartData([]);
     setChartDataUsd([]);
     setChartLoading(true);
+
+    // Check client-side cache (3 min TTL)
+    const cached = resultCacheRef.current.get(wallet);
+    if (cached && Date.now() - cached.fetchedAt < 180_000) {
+      applyResult(cached.data);
+      return;
+    }
 
     try {
       const workerUrl = process.env.NEXT_PUBLIC_WORKER_URL;
@@ -596,30 +624,20 @@ export default function WalletXRayClient() {
       }
 
       const data = await res.json() as WalletXRayResult;
-      if (data.pnlHistory && data.pnlHistory.length > 0) {
-        setChartData(data.pnlHistory);
+
+      // Cache the result
+      resultCacheRef.current.set(wallet, { data, fetchedAt: Date.now() });
+      if (resultCacheRef.current.size > 20) {
+        const oldest = resultCacheRef.current.keys().next().value;
+        if (oldest) resultCacheRef.current.delete(oldest);
       }
-      if (data.pnlHistoryUsd && data.pnlHistoryUsd.length > 0) {
-        setChartDataUsd(data.pnlHistoryUsd);
-      }
-      setChartLoading(false);
-      setResult(data);
-      setActiveTab('top');
-      setTopSort({ key: 'pnl', dir: 'desc' });
-      setActiveSort({ key: 'unrealized', dir: 'desc' });
-      setHistorySort({ key: 'lastTradeTime', dir: 'desc' });
-      setActivitySort({ key: 'lastTradeTime', dir: 'desc' });
-      setTopPage(0);
-      setActivePage(0);
-      setHistoryPage(0);
-      setActivityPage(0);
-      setTransfersPage(0);
-      setState('results');
+
+      applyResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
       setState('error');
     }
-  }, []);
+  }, [applyResult]);
 
   const analyze = useCallback(() => {
     analyzeWallet(input.trim());
