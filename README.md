@@ -33,7 +33,7 @@
 | Tool | Route | Description |
 |------|-------|-------------|
 | **SOL Reclaimer** | `/reclaim` | Close empty token accounts and reclaim locked rent SOL |
-| **Burn & Lock** | `/burn-lock` | Burn tokens permanently or lock them via Streamflow vesting contracts |
+| **Burn & Lock** | `/burn-lock` | Burn tokens permanently or lock them via on-chain vesting contracts |
 | **Vanity Generator** | `/vanity` | Generate custom Solana wallet addresses with token-based access |
 | **Token Scanner** | `/scan` | Instant safety reports — risk scores, holder concentration, LP status, market data |
 | **Wallet X-Ray** | `/xray` | Full PnL breakdown, win rate, trader grade, and per-token analysis for any wallet |
@@ -75,7 +75,7 @@ Permanently destroy tokens by sending them to a burn address. Tokens are removed
   <img src="docs/preview-lock.png" alt="Lock Tokens" width="800"/>
 </p>
 
-Lock tokens for a set duration using Streamflow vesting contracts. Non-cancellable, non-transferable, fully on-chain.
+Lock tokens for a set duration using on-chain vesting contracts. Non-cancellable, non-transferable, fully on-chain.
 
 1. Go to [soltools.net/burn-lock](https://soltools.net/burn-lock)
 2. Connect your Solana wallet
@@ -165,9 +165,9 @@ Every token account on Solana holds ~0.00203 SOL in rent. When you swap, trade, 
 
 Burn & Lock gives you two ways to permanently handle unwanted or project tokens — burn them forever or lock them for a set period.
 
-**Burn** uses the SPL Token burn instruction to permanently destroy tokens. They're removed from total supply and can never be recovered. Transactions use modern `VersionedTransaction` format for clean wallet interactions.
+**Burn** permanently destroys tokens by removing them from circulating supply. They can never be recovered.
 
-**Lock** creates a Streamflow vesting contract on-chain. The tokens are locked in a non-cancellable, non-transferable contract that releases them only after the chosen duration expires.
+**Lock** creates an on-chain vesting contract. The tokens are locked in a non-cancellable, non-transferable contract that releases them only after the chosen duration expires.
 
 ```
 ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
@@ -184,16 +184,16 @@ Burn & Lock gives you two ways to permanently handle unwanted or project tokens 
 |---------|-------------|
 | **Zero Fees** | No platform fees on burns or locks |
 | **Permanent Burns** | Tokens destroyed from circulating supply forever |
-| **On-Chain Locks** | Streamflow vesting contracts — non-cancellable, non-transferable |
+| **On-Chain Locks** | Vesting contracts — non-cancellable, non-transferable |
 | **Flexible Duration** | 1 day, 7 days, 30 days, 90 days, 1 year, or custom |
-| **Token 2022** | Supports both SPL Token and Token 2022 programs |
+| **All Token Types** | Supports all Solana token standards |
 | **Share on X** | One-click share after burn or lock |
 
 ---
 
 ## How the Vanity Generator Works
 
-The vanity generator creates Solana keypairs with custom prefixes or suffixes. All generation runs client-side in your browser using compiled Rust (WebAssembly) — zero network requests, keys never leave your device.
+The vanity generator creates Solana keypairs with custom prefixes or suffixes. All generation runs client-side in your browser — zero network requests, keys never leave your device.
 
 ```
 ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
@@ -218,10 +218,10 @@ The vanity generator creates Solana keypairs with custom prefixes or suffixes. A
 
 ## Architecture
 
-- **Web** — Next.js 14 static export with tools hub at `/`, individual tools at `/reclaim`, `/burn-lock`, `/vanity`, `/scan`, `/xray`, `/hackathon`
-- **API Worker** — Edge-deployed Cloudflare Worker for proxied RPC, analytics, and backend services
-- **Core** — Shared TypeScript library for Solana account scanning and transaction building
-- **WASM** — Rust-compiled vanity address generator running in Web Workers
+- **Web** — Static frontend with tools hub and individual tool pages
+- **API Worker** — Edge-deployed worker for proxied RPC, analytics, and backend services
+- **Core** — Shared library for Solana account scanning and transaction building
+- **WASM** — Compiled vanity address generator running in Web Workers
 
 ---
 
@@ -243,15 +243,15 @@ The vanity generator creates Solana keypairs with custom prefixes or suffixes. A
 ### v1.7.0
 
 **Burn & Lock, SOLT Token Page, Feature Requests & Performance**
-- New tool: Burn & Lock — burn tokens permanently or lock via Streamflow vesting contracts
-- Burn transactions use VersionedTransaction (no more wallet simulation warnings)
+- New tool: Burn & Lock — burn tokens permanently or lock via on-chain vesting contracts
+- Improved burn transaction handling (no more wallet simulation warnings)
 - SOLT token page with live chart, top traders, and market data
 - SolToolsBot Discord bot promo page
 - Feature request form on the home page (submit ideas directly)
 - Live active users counter with animated display on the hub
 - Share burn/lock results on X with social tracking
 - Client-side caching for X-Ray results (faster repeat lookups)
-- Improved X-Ray backend caching and Cloudflare edge caching
+- Improved X-Ray backend caching and edge caching
 - Rate limiting on stats and vanity endpoints
 - Hub page redesign with promo panels and unique card gradients
 - Various UI, mobile, and layout improvements
