@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://soltools.net'),
   title: 'SolTools - Solana Tools',
-  description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
+  description: 'Free Solana tools. Reclaim SOL, burn & lock tokens, scan tokens, X-Ray wallets, and more. No fees, no tracking.',
   keywords: ['Solana', 'rent', 'reclaim', 'token accounts', 'SOL', 'free', 'SolTools', 'SolReclaimer', 'vanity wallet'],
   authors: [{ name: 'Dequavious' }],
   icons: {
@@ -32,9 +32,15 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   openGraph: {
     title: 'SolTools',
-    description: 'Solana tools: reclaim locked SOL, generate vanity wallets, and more.',
+    description: 'Free Solana tools. Reclaim SOL, burn & lock tokens, scan tokens, X-Ray wallets, and more.',
     type: 'website',
-    images: [{ url: '/icon-512.png', width: 512, height: 512 }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SolTools',
+    description: 'Free Solana tools. No fees, no tracking, no compromise.',
+    images: ['/og-image.png'],
   },
 };
 
